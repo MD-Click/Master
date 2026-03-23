@@ -3,70 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu 3D Mirko</title>
+    <title>Menu 3D Experience</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    
     <style>
-        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f8f9fa; color: #333; }
-        header { background: #fff; text-align: center; padding: 40px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        h1 { font-family: 'Playfair Display', serif; margin: 10px 0; color: #1a1a1a; }
-        .menu-container { padding: 20px; max-width: 600px; margin: auto; }
-        
-        .card { background: white; border-radius: 20px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.08); transition: 0.3s; }
-        
-        /* Area Modello 3D */
-        model-viewer { width: 100%; height: 300px; background-color: #eee; }
-        
-        .card-content { padding: 20px; }
-        .price { color: #d4a373; font-weight: 600; font-size: 1.2rem; }
-        h2 { margin: 5px 0; font-size: 1.5rem; }
-        p { font-size: 0.9rem; color: #777; line-height: 1.5; }
-        
-        .ar-button {
-            background: #1a1a1a; color: white; border: none; padding: 12px 25px;
-            border-radius: 50px; font-weight: 600; cursor: pointer; width: 100%;
-            margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .ar-button:active { transform: scale(0.98); }
+        :root { --gold: #c5a059; --dark: #1a1a1a; --light: #fdfdfd; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--light); color: var(--dark); }
+        header { text-align: center; padding: 60px 20px; background: white; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 2.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
+        .category-title { text-align: center; padding: 20px; background: #f4f4f4; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .menu-grid { padding: 20px; max-width: 800px; margin: auto; }
+        .item-card { background: white; border-radius: 15px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .item-info { padding: 20px; }
+        .item-header { display: flex; justify-content: space-between; align-items: baseline; }
+        .item-price { color: var(--gold); font-weight: 600; }
+        .ar-badge { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: 700; margin-bottom: 10px; display: inline-block; }
+        model-viewer { width: 100%; height: 350px; background: #f9f9f9; }
+        .ar-btn { background: var(--dark); color: white; border: none; width: 100%; padding: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 0 0 15px 15px; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>MEYS GRILL</h1>
-    <p>Sperimenta il gusto in Realtà Aumentata</p>
+    <h1 class="logo">MEYS GRILL</h1>
+    <p>Realtà Aumentata Experience</p>
 </header>
 
-<div class="menu-container">
+<div class="category-title">Platos Principales</div>
 
-    <div class="card">
-        <model-viewer src="piatto.glb" ios-src="piatto.usdz" ar ar-modes="webxr scene-viewer quick-look" camera-controls shadow-intensity="1" auto-rotate>
-            <button slot="ar-button" class="ar-button">
-                <span>🥘</span> VEDI SUL TUO TAVOLO
-            </button>
+<div class="menu-grid" id="menu-content">
+    <div class="item-card">
+        <model-viewer src="piatto.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls shadow-intensity="1" auto-rotate>
+            <button slot="ar-button" class="ar-btn">🥘 VEDI SUL TUO TAVOLO</button>
         </model-viewer>
-        <div class="card-content">
-            <span class="price">€ 18.00</span>
-            <h2>Paella de Marisco</h2>
-            <p>Zafferano pregiato, frutti di mare freschi e riso bomba cotto a puntino.</p>
+        <div class="item-info">
+            <div class="ar-badge">DISPONIBILE IN 3D</div>
+            <div class="item-header">
+                <h2>Paella de Marisco</h2>
+                <span class="item-price">18.50€</span>
+            </div>
+            <p>Cocinada a leña con marisco fresco de la costa.</p>
         </div>
     </div>
 
-    <div class="card">
-        <model-viewer src="tavolo.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls shadow-intensity="1">
-            <button slot="ar-button" class="ar-button">
-                <span>🪑</span> VEDI SUL TUO TAVOLO
-            </button>
-        </model-viewer>
-        <div class="card-content">
-            <span class="price">€ 45.00</span>
-            <h2>Tavolo Design</h2>
-            <p>Un esempio di come puoi mostrare anche l'arredamento o altri piatti.</p>
+    <div class="item-card">
+        <div style="background: #eee; height: 200px; display: flex; align-items: center; justify-content: center; color: #999;">
+            [Foto del Piatto]
+        </div>
+        <div class="item-info">
+            <div class="item-header">
+                <h2>Fideuà de Gandía</h2>
+                <span class="item-price">16.00€</span>
+            </div>
+            <p>Fideo fino con caldo de pescado intenso y alioli.</p>
         </div>
     </div>
-
 </div>
+
+<footer style="text-align: center; padding: 40px; color: #ccc; font-size: 0.8rem;">
+    Powered by Mirko 3D Menu Tech
+</footer>
 
 </body>
 </html>
