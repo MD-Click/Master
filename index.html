@@ -3,103 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu 3D Prototipo</title>
+    <title>MEYS GRILL - Digital Experience</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
-        /* --- STILE DINAMICO (GESTITO DALLA CONFIGURAZIONE) --- */
-        :root { --main-color: #c5a059; --bg-color: #fdfdfd; --text-color: #1a1a1a; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg-color); color: var(--text-color); }
-        header { text-align: center; padding: 30px 20px; background: white; border-bottom: 1px solid #eee; }
-        .logo { font-family: 'Playfair Display', serif; font-size: 2rem; margin: 0; cursor: pointer; text-transform: uppercase; }
-        #home-screen, #category-screen { padding: 20px; max-width: 600px; margin: auto; }
-        .cat-card { position: relative; height: 160px; border-radius: 15px; margin-bottom: 20px; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #333; }
+        :root { --main: #c5a059; --dark: #1a1a1a; --bg: #fdfdfd; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--dark); }
+        
+        /* Layout generico */
+        .screen { display: none; padding: 20px; max-width: 600px; margin: auto; animation: fadeIn 0.4s; }
+        .active { display: block; }
+        header { text-align: center; padding: 40px 20px; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 2.5rem; text-transform: uppercase; margin: 0; cursor: pointer; }
+
+        /* Pagina 1: LANDING (Food o Drinks) */
+        #landing-screen { height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; }
+        .main-choice { 
+            width: 100%; height: 150px; border-radius: 20px; overflow: hidden; position: relative;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); background: var(--dark);
+        }
+        .main-choice img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+        .main-choice span { position: relative; color: white; font-family: 'Playfair Display', serif; font-size: 2.2rem; z-index: 2; }
+
+        /* Pagina 2: CATEGORIE */
+        .cat-card { position: relative; height: 140px; border-radius: 15px; margin-bottom: 20px; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; background: #333; }
         .cat-card img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
-        .cat-card span { position: relative; color: white; font-family: 'Playfair Display', serif; font-size: 1.8rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .cat-card span { position: relative; color: white; font-family: 'Playfair Display', serif; font-size: 1.6rem; }
+
+        /* Pagina 3: LISTA PIATTI */
         .item-card { background: white; border-radius: 15px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        model-viewer { width: 100%; height: 300px; background: #f9f9f9; }
         .item-info { padding: 20px; }
         .item-header { display: flex; justify-content: space-between; align-items: baseline; }
-        .item-price { color: var(--main-color); font-weight: 600; }
-        model-viewer { width: 100%; height: 300px; background: #f9f9f9; }
-        .ar-btn { background: var(--text-color); color: white; border: none; width: 100%; padding: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .back-btn { background: none; border: none; font-weight: 600; cursor: pointer; color: var(--main-color); margin-bottom: 20px; display: flex; align-items: center; gap: 5px; }
+        .item-price { color: var(--main); font-weight: 600; }
+        .ar-btn { background: var(--dark); color: white; border: none; width: 100%; padding: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .back-btn { background: none; border: none; font-weight: 600; cursor: pointer; color: var(--main); margin-bottom: 20px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<header><h1 class="logo" id="rest-name" onclick="showHome()">NOME RISTORANTE</h1></header>
+<header><h1 class="logo" onclick="location.reload()">MEYS GRILL</h1></header>
 
-<div id="home-screen"></div> <div id="category-screen" style="display:none;">
-    <button class="back-btn" onclick="showHome()">← Menu Principale</button>
+<div id="landing-screen" class="screen active">
+    <div class="main-choice" onclick="showCategories('food')">
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600">
+        <span>MENU CIBO</span>
+    </div>
+    <div class="main-choice" onclick="showCategories('drinks')">
+        <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600">
+        <span>DRINKS</span>
+    </div>
+</div>
+
+<div id="home-screen" class="screen">
+    <button class="back-btn" onclick="showLanding()">← Indietro</button>
+    <div id="categories-container"></div>
+</div>
+
+<div id="category-screen" class="screen">
+    <button id="btn-back-to-cat" class="back-btn">← Torna alle Categorie</button>
     <h2 id="cat-title" style="font-family:'Playfair Display'; font-size: 2rem; margin-bottom: 20px;"></h2>
     <div id="items-container"></div>
 </div>
 
 <script>
 /* ==========================================
-   1. CONFIGURAZIONE MENU (MODIFICA QUI)
+   CONFIGURAZIONE (FACILE DA CAMBIARE)
    ========================================== */
-const CONFIG = {
-    nomeRistorante: "MEYS GRILL",
-    colorePrimario: "#c5a059", // Cambia questo per cambiare tutto il tema
-    coloreSfondo: "#fdfdfd"
+const CATEGORIE = {
+    food: [
+        { id: "principales", nome: "Platos Principales", foto: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400" },
+        { id: "entrantes", nome: "Entrantes", foto: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=400" }
+    ],
+    drinks: [
+        { id: "vini", nome: "Vini Bianchi", foto: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400" },
+        { id: "cocktails", nome: "Cocktails", foto: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400" }
+    ]
 };
 
-const CATEGORIE = [
-    { 
-        id: "principales", 
-        nome: "Platos Principales", 
-        foto: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400" 
-    },
-    { 
-        id: "entrantes", 
-        nome: "Entrantes", 
-        foto: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=400" 
-    },
-    { 
-        id: "bebidas", 
-        nome: "Bebidas", 
-        foto: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400" 
-    }
-];
-
 const PIATTI = [
-    { cat: "principales", nome: "Paella de Marisco", prezzo: "18.50€", desc: "Riso bomba, gamberi e cozze fresche.", modello: "piatto.glb" },
-    { cat: "principales", nome: "Fideuà de Gandía", prezzo: "16.00€", desc: "Pasta corta cotta in brodo di pesce.", modello: "" },
-    { cat: "entrantes", nome: "Gambas al Ajillo", prezzo: "12.00€", desc: "Gamberetti saltati con aglio e olio.", modello: "" },
-    { cat: "bebidas", nome: "Vino Blanco", prezzo: "22.00€", desc: "Bottiglia di Albariño fresco.", modello: "" }
+    { cat: "principales", nome: "Paella de Marisco", prezzo: "18.50€", desc: "Riso bomba e frutti di mare.", modello: "piatto.glb" },
+    { cat: "entrantes", nome: "Gambas al Ajillo", prezzo: "12.00€", desc: "Gamberetti aglio e olio.", modello: "" },
+    { cat: "vini", nome: "Albariño", prezzo: "22.00€", desc: "Vino bianco della casa.", modello: "" }
 ];
 
 /* ==========================================
-   2. MOTORE DEL MENU (NON TOCCARE)
+   LOGICA DI NAVIGAZIONE
    ========================================== */
-function initMenu() {
-    document.getElementById('rest-name').innerText = CONFIG.nomeRistorante;
-    document.documentElement.style.setProperty('--main-color', CONFIG.colorePrimario);
-    document.documentElement.style.setProperty('--bg-color', CONFIG.coloreSfondo);
+let currentType = 'food';
+
+function showLanding() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('landing-screen').classList.add('active');
+}
+
+function showCategories(type) {
+    currentType = type;
+    const container = document.getElementById('categories-container');
+    container.innerHTML = '';
     
-    const home = document.getElementById('home-screen');
-    home.innerHTML = '';
-    CATEGORIE.forEach(cat => {
-        home.innerHTML += `
-            <div class="cat-card" onclick="showCategory('${cat.id}')">
+    CATEGORIE[type].forEach(cat => {
+        container.innerHTML += `
+            <div class="cat-card" onclick="showItems('${cat.id}')">
                 <img src="${cat.foto}">
                 <span>${cat.nome}</span>
             </div>`;
     });
+
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('home-screen').classList.add('active');
 }
 
-function showCategory(id) {
-    const cat = CATEGORIE.find(c => c.id === id);
-    document.getElementById('cat-title').innerText = cat.nome;
+function showItems(catId) {
+    const catObj = CATEGORIE[currentType].find(c => c.id === catId);
+    document.getElementById('cat-title').innerText = catObj.nome;
     const container = document.getElementById('items-container');
     container.innerHTML = '';
 
-    PIATTI.filter(p => p.cat === id).forEach(p => {
+    PIATTI.filter(p => p.cat === catId).forEach(p => {
         let card = `<div class="item-card">`;
         if(p.modello) {
             card += `<model-viewer src="${p.modello}" ar ar-modes="webxr scene-viewer quick-look" camera-controls shadow-intensity="1">
-                        <button slot="ar-button" class="ar-btn">🥘 VEDI SUL TAVOLO</button>
+                        <button slot="ar-button" class="ar-btn">🥘 VEDI IN 3D</button>
                      </model-viewer>`;
         }
         card += `<div class="item-info">
@@ -109,17 +137,11 @@ function showCategory(id) {
         container.innerHTML += card;
     });
 
-    document.getElementById('home-screen').style.display = 'none';
-    document.getElementById('category-screen').style.display = 'block';
+    document.getElementById('btn-back-to-cat').onclick = () => showCategories(currentType);
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('category-screen').classList.add('active');
     window.scrollTo(0,0);
 }
-
-function showHome() {
-    document.getElementById('home-screen').style.display = 'block';
-    document.getElementById('category-screen').style.display = 'none';
-}
-
-initMenu();
 </script>
 </body>
 </html>
