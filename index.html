@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEYS GRILL - AR Digital Menu</title>
+    <title>Menu Digitale AR - Pro</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
     <style>
-        /* --- CONFIGURAZIONE STILE --- */
         :root {
             --colore-principale: #c5a059;
             --colore-sfondo: #f8f8f8;
@@ -16,150 +16,229 @@
             --colore-pulsante: #1a1a1a;
             --font-titoli: 'Playfair Display', serif;
             --font-corpo: 'Poppins', sans-serif;
-            --dimensione-logo: 2.2rem;
         }
 
         body { font-family: var(--font-corpo); margin: 0; background: var(--colore-sfondo); color: var(--colore-testo); }
-        header { text-align: center; padding: 30px 20px; background: white; border-bottom: 1px solid #ddd; }
-        .logo { font-family: var(--font-titoli); font-size: var(--dimensione-logo); text-transform: uppercase; cursor: pointer; letter-spacing: 2px; }
+        header { text-align: center; padding: 20px; background: white; border-bottom: 1px solid #ddd; }
+        .logo-testo { font-family: var(--font-titoli); font-size: 2rem; margin: 0; text-transform: uppercase; }
 
-        .screen { display: none; min-height: 100vh; width: 100%; padding: 20px; box-sizing: border-box; }
+        .screen { display: none; padding: 20px; box-sizing: border-box; }
         .screen.active { display: block; animation: fadeIn 0.4s ease; }
 
-        /* Landing */
-        .landing-grid { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
-        .btn-macro { height: 200px; border-radius: 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        /* FILTRI */
+        .filter-bar { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 20px; scrollbar-width: none; }
+        .filter-chip { 
+            padding: 8px 15px; background: white; border: 1px solid #ddd; border-radius: 20px; 
+            white-space: nowrap; cursor: pointer; font-size: 0.9rem; transition: 0.3s;
+        }
+        .filter-chip.active { background: var(--colore-principale); color: white; border-color: var(--colore-principale); }
+
+        /* GRID & CARDS */
+        .landing-grid { display: flex; flex-direction: column; gap: 15px; }
+        .btn-macro { 
+            height: 180px; border-radius: 20px; position: relative; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; 
+        }
         .btn-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
-        .btn-macro span { position: relative; color: white; font-size: 2.5rem; font-family: var(--font-titoli); z-index: 2; }
+        .btn-macro span { position: relative; color: white; font-size: 2.2rem; font-family: var(--font-titoli); z-index: 2; }
 
-        /* Categorie */
-        .cat-card { height: 130px; border-radius: 15px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; cursor: pointer; }
+        .cat-card { height: 120px; border-radius: 15px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
         .cat-card img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
-        .cat-card span { position: relative; color: white; font-size: 1.7rem; font-family: var(--font-titoli); }
+        .cat-card span { position: relative; color: white; font-size: 1.6rem; font-family: var(--font-titoli); }
 
-        /* Scheda Piatto */
-        .item-card { background: white; border-radius: 20px; margin-bottom: 30px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08); position: relative; }
-        .item-info { padding: 20px; }
+        .item-card { background: white; border-radius: 20px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .foto-piatto { width: 100%; height: 240px; background-size: cover; background-position: center; position: relative; }
+        .item-info { padding: 15px; }
         .item-header { display: flex; justify-content: space-between; align-items: baseline; }
-        .item-price { color: var(--colore-principale); font-weight: 700; font-size: 1.2rem; }
-        .allergens { font-size: 1.2rem; margin: 10px 0; }
-        .item-desc { color: #555; font-size: 0.95rem; line-height: 1.5; }
-
-        /* 3D Visualizer */
-        model-viewer { width: 100%; height: 400px; background: #fafafa; }
+        .item-price { color: var(--colore-principale); font-weight: 700; }
         
         .ar-btn { 
-            background: var(--colore-pulsante); color: white; border: none; padding: 18px; 
-            font-weight: 700; cursor: pointer; border-radius: 50px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            position: absolute; bottom: 25px; left: 10%; width: 80%; z-index: 10;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            background: var(--colore-pulsante); color: white; border: none; padding: 12px; 
+            border-radius: 50px; position: absolute; bottom: 15px; left: 10%; width: 80%; font-weight: bold;
         }
 
-        .back-bar { padding: 15px; background: #eee; cursor: pointer; font-weight: 600; color: var(--colore-principale); margin-bottom: 10px; border-radius: 10px; display: inline-block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .back-bar { padding: 10px 0; color: var(--colore-principale); cursor: pointer; font-weight: 600; margin-bottom: 10px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<header><h1 class="logo" onclick="location.reload()">MEYS GRILL</h1></header>
+<header id="main-header"></header>
 
 <div id="scr-landing" class="screen active">
-    <div class="landing-grid">
-        <div class="btn-macro" onclick="navToCategories('food')">
-            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600">
-            <span>FOOD</span>
-        </div>
-        <div class="btn-macro" onclick="navToCategories('drinks')">
-            <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600">
-            <span>DRINKS</span>
-        </div>
-    </div>
+    <div class="landing-grid" id="macro-container"></div>
 </div>
 
 <div id="scr-categories" class="screen">
-    <div class="back-bar" onclick="navToLanding()">← HOME</div>
+    <div class="back-bar" onclick="navToLanding()" id="btn-back-home"></div>
     <div id="cat-list"></div>
 </div>
 
 <div id="scr-items" class="screen">
-    <div id="back-to-cat" class="back-bar">← CATEGORIE</div>
+    <div class="back-bar" id="btn-back-cat"></div>
+    <div class="filter-bar" id="filter-bar"></div>
     <div id="items-list"></div>
 </div>
 
 <script>
-/* ==========================================
-   GESTIONE DATI (MODIFICA QUI)
-   ========================================== */
+/* =========================================================================
+   1. CONFIGURAZIONE INTERFACCIA E TRADUZIONI 
+   ========================================================================= */
+const UI_LABELS = {
+    it: { backHome: "← TORNA ALLA HOME", backCat: "← CATEGORIE", arBtn: "✨ VEDI SUL TAVOLO", all: "Tutti", glutenFree: "Senza Glutine", food: "CIBO", drinks: "BEVANDE" },
+    en: { backHome: "← BACK TO HOME", backCat: "← CATEGORIES", arBtn: "✨ VIEW ON TABLE", all: "All", glutenFree: "Gluten Free", food: "FOOD", drinks: "DRINKS" },
+    es: { backHome: "← VOLVER AL INICIO", backCat: "← CATEGORÍAS", arBtn: "✨ VER EN LA MESA", all: "Todos", glutenFree: "Sin Gluten", food: "COMIDA", drinks: "BEBIDAS" }
+};
+
+const APP_CONFIG = {
+    testoLogo: "MEYS GRILL",
+    colori: { principale: "#c5a059", sfondo: "#f8f8f8", testo: "#1a1a1a", pulsanteAR: "#1a1a1a" }
+};
+
+/* =========================================================================
+   2. DATI MENU (Traduzioni incluse per ogni piatto)
+   ========================================================================= */
 const MENU_DATA = {
     food: [
         { 
             id: "principali", 
-            nome: "Platos Principales", 
+            nome: { it: "Piatti Principali", en: "Main Courses", es: "Platos Principales" },
             foto: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400",
             piatti: [
-                { n: "Paella de Marisco", p: "18.50€", d: "Cocinada a leña con marisco fresco de la costa.", a: "🦐, 🐚, 🐟", m: "piatto.glb" },
-                { n: "Fideuà de Gandía", p: "16.00€", d: "Pasta corta cotta in brodo intenso di pesce.", a: "🦐, 🐚, 🐟, 🌾", m: "" }
+                { 
+                    n: { it: "Paella di Pesce", en: "Seafood Paella", es: "Paella de Marisco" }, 
+                    p: "18.50€", 
+                    d: { it: "Cucinata a legna con pesce fresco.", en: "Wood-fired with fresh seafood.", es: "Cocinada a leña con marisco fresco." }, 
+                    a: "🦐, 🐚", 
+                    isGlutenFree: true,
+                    f: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600",
+                    m: "piatto.glb" 
+                },
+                { 
+                    n: { it: "Fideuà", en: "Fideuà Pasta", es: "Fideuà" }, 
+                    p: "16.00€", 
+                    d: { it: "Pasta corta in brodo di pesce.", en: "Short pasta in fish broth.", es: "Pasta corta en caldo de pescado." }, 
+                    a: "🦐, 🌾", 
+                    isGlutenFree: false,
+                    f: "https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=600",
+                    m: "" 
+                }
             ]
         }
     ],
     drinks: [
         { 
-            id: "vini", nome: "Vini Bianchi", foto: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400",
-            piatti: [{ n: "Albariño D.O.", p: "22.00€", d: "Vino fresco Galiziano.", a: "🍷", m: "" }]
+            id: "vini", 
+            nome: { it: "Vini", en: "Wines", es: "Vinos" },
+            foto: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400",
+            piatti: [
+                { n: { it: "Vino Bianco", en: "White Wine", es: "Vino Blanco" }, p: "15.00€", d: { it: "Fresco e fruttato", en: "Fresh and fruity", es: "Fresco y frutado" }, a: "🍷", isGlutenFree: true, f: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600", m: "" }
+            ]
         }
     ]
 };
 
-/* ==========================================
-   MOTORE NAVIGAZIONE & 3D
-   ========================================== */
+/* =========================================================================
+   3. LOGICA DELL'APPLICAZIONE
+   ========================================================================= */
+let lang = 'it'; // Default
 let currentMacro = 'food';
+let currentFilter = 'all';
+
+function initApp() {
+    // Rileva lingua
+    const userLang = navigator.language || navigator.userLanguage;
+    const shortLang = userLang.split('-')[0];
+    if (UI_LABELS[shortLang]) lang = shortLang;
+
+    // Colori
+    document.documentElement.style.setProperty('--colore-principale', APP_CONFIG.colori.principale);
+    document.getElementById('main-header').innerHTML = `<h1 class="logo-testo">${APP_CONFIG.testoLogo}</h1>`;
+    
+    renderLanding();
+}
+
+function renderLanding() {
+    const container = document.getElementById('macro-container');
+    container.innerHTML = `
+        <div class="btn-macro" onclick="navToCategories('food')">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600">
+            <span>${UI_LABELS[lang].food}</span>
+        </div>
+        <div class="btn-macro" onclick="navToCategories('drinks')">
+            <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600">
+            <span>${UI_LABELS[lang].drinks}</span>
+        </div>
+    `;
+}
 
 function navToLanding() { switchScreen('scr-landing'); }
 
 function navToCategories(type) {
     currentMacro = type;
+    document.getElementById('btn-back-home').innerText = UI_LABELS[lang].backHome;
     const container = document.getElementById('cat-list');
     container.innerHTML = '';
     MENU_DATA[type].forEach(cat => {
-        container.innerHTML += `<div class="cat-card" onclick="navToItems('${cat.id}')"><img src="${cat.foto}"><span>${cat.nome}</span></div>`;
+        container.innerHTML += `
+            <div class="cat-card" onclick="navToItems('${cat.id}')">
+                <img src="${cat.foto}">
+                <span>${cat.nome[lang]}</span>
+            </div>`;
     });
     switchScreen('scr-categories');
 }
 
 function navToItems(catId) {
     const catObj = MENU_DATA[currentMacro].find(c => c.id === catId);
-    const container = document.getElementById('items-list');
-    container.innerHTML = `<h2 style="font-family:var(--font-titoli); font-size:2rem; margin-bottom:20px;">${catObj.nome}</h2>`;
+    document.getElementById('btn-back-cat').innerText = UI_LABELS[lang].backCat;
+    document.getElementById('btn-back-cat').onclick = () => navToCategories(currentMacro);
     
-    catObj.piatti.forEach(p => {
+    renderFilters(catId);
+    renderItems(catObj);
+    switchScreen('scr-items');
+}
+
+function renderFilters(catId) {
+    const bar = document.getElementById('filter-bar');
+    bar.innerHTML = `
+        <div class="filter-chip ${currentFilter==='all'?'active':''}" onclick="setFilter('all', '${catId}')">${UI_LABELS[lang].all}</div>
+        <div class="filter-chip ${currentFilter==='gf'?'active':''}" onclick="setFilter('gf', '${catId}')">🚫 ${UI_LABELS[lang].glutenFree}</div>
+    `;
+}
+
+function setFilter(f, catId) {
+    currentFilter = f;
+    navToItems(catId); // Refresh
+}
+
+function renderItems(catObj) {
+    const container = document.getElementById('items-list');
+    container.innerHTML = `<h2 style="font-family:var(--font-titoli)">${catObj.nome[lang]}</h2>`;
+    
+    const filtrati = catObj.piatti.filter(p => currentFilter === 'all' || (currentFilter === 'gf' && p.isGlutenFree));
+
+    filtrati.forEach(p => {
         let html = `<div class="item-card">`;
         if(p.m) {
             html += `
-            <div style="position:relative;">
-                <model-viewer src="${p.m}" 
-                    ar ar-modes="scene-viewer quick-look webxr" 
-                    ar-scale="auto"
-                    camera-controls
-                    auto-rotate 
-                    rotation-per-second="40deg"
-                    interaction-prompt="none"
-                    style="pointer-events: none;"
-                    shadow-intensity="2">
-                    <button slot="ar-button" class="ar-btn" style="pointer-events: auto;">🥘 VEDI SUL TUO TAVOLO</button>
-                </model-viewer>
-            </div>`;
+                <model-viewer src="${p.m}" ar ar-modes="scene-viewer quick-look webxr" ar-scale="auto" style="width:100%; height:240px;">
+                    <div slot="poster" class="foto-piatto" style="background-image: url('${p.f}');"></div>
+                    <button slot="ar-button" class="ar-btn">${UI_LABELS[lang].arBtn}</button>
+                </model-viewer>`;
+        } else {
+            html += `<div class="foto-piatto" style="background-image: url('${p.f}');"></div>`;
         }
-        html += `<div class="item-info">
-                    <div class="item-header"><h3 style="margin:0">${p.n}</h3><span class="item-price">${p.p}</span></div>
-                    <div class="allergens">${p.a}</div>
-                    <p class="item-desc">${p.d}</p>
-                 </div></div>`;
+
+        html += `
+            <div class="item-info">
+                <div class="item-header"><h3>${p.n[lang]}</h3><span class="item-price">${p.p}</span></div>
+                <div style="font-size:1.1rem; margin:5px 0">${p.a} ${p.isGlutenFree ? ' <small>(GF)</small>' : ''}</div>
+                <p style="color:#666; font-size:0.9rem">${p.d[lang]}</p>
+            </div></div>`;
         container.innerHTML += html;
     });
-    document.getElementById('back-to-cat').onclick = () => navToCategories(currentMacro);
-    switchScreen('scr-items');
 }
 
 function switchScreen(id) {
@@ -167,6 +246,8 @@ function switchScreen(id) {
     document.getElementById(id).classList.add('active');
     window.scrollTo(0,0);
 }
+
+initApp();
 </script>
 </body>
 </html>
