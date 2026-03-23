@@ -3,164 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sushi Time Nerja - Menu Pro</title>
+    <title>Menu Digitale AR Internazionale</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
     <style>
+        /* -----------------------------------------------------------
+           BLOCCO 1: DESIGN E COLORI (Facile da modificare)
+           ----------------------------------------------------------- */
         :root {
-            --oro: #c5a059; --nero: #1a1a1a; --bianco: #ffffff;
-            --font-titoli: 'Playfair Display', serif; --font-corpo: 'Poppins', sans-serif;
+            --oro: #c5a059;
+            --nero: #1a1a1a;
+            --bianco: #ffffff;
+            --grigio-light: #f4f4f4;
+            --font-titoli: 'Playfair Display', serif;
+            --font-corpo: 'Poppins', sans-serif;
         }
-        body { font-family: var(--font-corpo); margin: 0; background: #f8f8f8; color: var(--nero); }
-        header { text-align: center; padding: 20px; background: var(--bianco); border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+
+        body { font-family: var(--font-corpo); margin: 0; background: var(--grigio-light); color: var(--nero); overflow-x: hidden; }
         
+        header { 
+            text-align: center; padding: 30px 20px; background: var(--bianco); 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;
+        }
+
         .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; }
-        .screen.active { display: block; animation: fadeIn 0.4s ease-out; }
+        .screen.active { display: block; animation: fadeIn 0.5s ease forwards; }
 
-        /* LANDING GRID */
-        .landing-grid { display: flex; flex-direction: column; gap: 20px; }
-        .btn-macro { 
-            height: 200px; border-radius: 20px; position: relative; overflow: hidden; 
-            display: flex; align-items: center; justify-content: center; cursor: pointer; 
+        /* FILTRI ALLERGENI */
+        .filter-container { 
+            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; 
+            margin-bottom: 20px; scrollbar-width: none; 
         }
-        .btn-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
-        .btn-macro span { position: relative; color: white; font-size: 2.5rem; font-family: var(--font-titoli); z-index: 2; }
-
-        /* CATEGORY CARDS */
-        .cat-card { 
-            position: relative; height: 130px; border-radius: 15px; overflow: hidden; 
-            margin-bottom: 15px; cursor: pointer; 
+        .filter-btn { 
+            padding: 10px 20px; background: var(--bianco); border: 1px solid #ddd; 
+            border-radius: 30px; cursor: pointer; white-space: nowrap; transition: 0.3s;
         }
-        .cat-card img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
-        .cat-card span { position: absolute; bottom: 15px; left: 15px; color: white; font-family: var(--font-titoli); font-size: 1.5rem; }
+        .filter-btn.active { background: var(--oro); color: white; border-color: var(--oro); }
 
-        /* DISH CARDS */
-        .item-card { background: white; border-radius: 20px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .item-info { padding: 15px; }
-        .price { color: var(--oro); font-weight: 700; font-size: 1.2rem; }
+        /* CARDS PIATTI */
+        .card { 
+            background: var(--bianco); border-radius: 25px; margin-bottom: 30px; 
+            overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.08); 
+        }
         
-        /* AR: INTERAZIONE BLOCCATA */
-        model-viewer { width: 100%; height: 300px; background: #eee; pointer-events: none; }
-        .ar-button {
-            background: var(--nero); color: white; border: none; padding: 12px 20px;
-            border-radius: 50px; position: absolute; bottom: 15px; right: 15px; 
-            font-weight: 600; pointer-events: auto;
+        /* -----------------------------------------------------------
+           BLOCCO 2: MOTORE AR (Interazione Professionale)
+           ----------------------------------------------------------- */
+        model-viewer {
+            width: 100%; height: 300px; background-color: #eee;
+            --poster-color: transparent;
         }
 
-        .back-bar { padding: 12px; color: var(--oro); cursor: pointer; font-weight: 600; margin-bottom: 10px; background: white; border-radius: 10px; display: inline-block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .ar-button {
+            background-color: var(--nero); border-radius: 50px; border: none;
+            position: absolute; bottom: 16px; right: 16px; padding: 12px 24px;
+            color: white; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .item-content { padding: 20px; }
+        .price { color: var(--oro); font-weight: 700; font-size: 1.3rem; }
+        .badge-gf { background: #e7f6e7; color: #2e7d32; padding: 4px 8px; border-radius: 5px; font-size: 0.8rem; margin-left: 10px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<header><h1 style="font-family: var(--font-titoli); margin:0;">SUSHI TIME NERJA</h1></header>
+<header>
+    <h1 id="ui-logo" style="font-family: var(--font-titoli); margin:0;">MEYS GRILL</h1>
+</header>
 
-<div id="scr-landing" class="screen active">
-    <div class="landing-grid">
-        <div class="btn-macro" onclick="navToCategories('Cibo')">
-            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600">
-            <span id="txt-food">CIBO</span>
-        </div>
-        <div class="btn-macro" onclick="navToCategories('Bevande')">
-            <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600">
-            <span id="txt-drinks">BEVANDE</span>
-        </div>
-    </div>
-</div>
-
-<div id="scr-categories" class="screen">
-    <div class="back-bar" onclick="navToLanding()" id="ui-back-home">← HOME</div>
-    <div id="cat-list"></div>
+<div id="scr-home" class="screen active">
+    <div id="macro-list"></div>
 </div>
 
 <div id="scr-items" class="screen">
-    <div class="back-bar" id="ui-back-cat">← CATEGORIE</div>
+    <div class="filter-btn" style="display:inline-block; margin-bottom:15px;" onclick="navToHome()" id="ui-back">Indietro</div>
+    <div class="filter-container" id="allergen-filters"></div>
     <div id="items-list"></div>
 </div>
 
 <script>
-/* --- TRADUZIONI (8 LINGUE) --- */
+/* =========================================================================
+   BLOCCO 3: DIZIONARIO TRADUZIONI (Aggiungi qui le lingue)
+   Scrivi la parola in italiano a sinistra e la traduzione a destra.
+   ========================================================================= */
 const TRANSLATIONS = {
-    "it": { "food": "CIBO", "drinks": "BEVANDE", "back": "Indietro", "ar-btn": "VEDI SUL TAVOLO", "Platos Principales": "Piatti Principali", "Entrantes": "Antipasti", "Vinos": "Vini" },
-    "en": { "food": "FOOD", "drinks": "DRINKS", "back": "Back", "ar-btn": "VIEW ON TABLE", "Platos Principales": "Main Courses", "Entrantes": "Starters", "Vinos": "Wines" },
-    "de": { "food": "ESSEN", "drinks": "GETRÄNKE", "back": "Zurück", "ar-btn": "AUF DEM TISCH SEHEN", "Platos Principales": "Hauptgerichte", "Entrantes": "Vorspeisen", "Vinos": "Weine" },
-    "es": { "food": "COMIDA", "drinks": "BEBIDAS", "back": "Volver", "ar-btn": "VER EN LA MESA", "Platos Principales": "Platos Principales", "Entrantes": "Entrantes", "Vinos": "Vinos" },
-    "fr": { "food": "NOURRITURE", "drinks": "BOISSONS", "back": "Retour", "ar-btn": "VOIR SUR LA TABLE", "Platos Principales": "Plats Principaux", "Entrantes": "Entrées", "Vinos": "Vins" },
-    "zh": { "food": "食物", "drinks": "饮料", "back": "返回", "ar-btn": "在桌上查看", "Platos Principales": "主菜", "Entrantes": "前菜", "Vinos": "葡萄酒" },
-    "pl": { "food": "JEDZENIE", "drinks": "NAPOJE", "back": "Powrót", "ar-btn": "ZOBACZ NA STOLE", "Platos Principales": "Dania Główne", "Entrantes": "Przystawki", "Vinos": "Wina" },
-    "sv": { "food": "MAT", "drinks": "DRYCKER", "back": "Tillbaka", "ar-btn": "VISA PÅ BORDET", "Platos Principales": "Huvudrätter", "Entrantes": "Förrätter", "Vinos": "Viner" }
+    "it": { "cibo": "CIBO", "bevande": "BEVANDE", "indietro": "← Indietro", "tutti": "Tutti", "senza-glutine": "Senza Glutine", "ar-btn": "VEDI SUL TAVOLO", "carne": "Carne", "pesce": "Pesce" },
+    "en": { "cibo": "FOOD", "bevande": "DRINKS", "indietro": "← Back", "tutti": "All", "senza-glutine": "Gluten Free", "ar-btn": "VIEW ON TABLE", "carne": "Meat", "pesce": "Fish" },
+    "de": { "cibo": "ESSEN", "bevande": "GETRÄNKE", "indietro": "← Zurück", "tutti": "Alle", "senza-glutine": "Glutenfrei", "ar-btn": "AUF DEM TISCH SEHEN", "carne": "Fleisch", "pesce": "Fisch" },
+    "es": { "cibo": "COMIDA", "bevande": "BEBIDAS", "indietro": "← Volver", "tutti": "Todos", "senza-glutine": "Sin Glutine", "ar-btn": "VER EN LA MESA", "carne": "Carne", "pesce": "Pescado" },
+    "fr": { "cibo": "NOURRITURE", "bevande": "BOISSONS", "indietro": "← Retour", "tutti": "Tous", "senza-glutine": "Sans Gluten", "ar-btn": "VOIR SUR LA TABLE", "carne": "Viande", "pesce": "Poisson" },
+    "zh": { "cibo": "食物", "bevande": "饮料", "indietro": "← 返回", "tutti": "全部", "senza-glutine": "无麸质", "ar-btn": "在桌上查看", "carne": "肉", "pesce": "鱼" },
+    "pl": { "cibo": "JEDZENIE", "bevande": "NAPOJE", "indietro": "← Powrót", "tutti": "Wszystko", "senza-glutine": "Bezglutenowe", "ar-btn": "ZOBACZ NA STOLE", "carne": "Mięso", "pesce": "Ryba" },
+    "sv": { "cibo": "MAT", "bevande": "DRYCKER", "indietro": "← Tillbaka", "tutti": "Alla", "senza-glutine": "Glutenfritt", "ar-btn": "VISA PÅ BORDET", "carne": "Kött", "pesce": "Fisk" },
+    
+    // TRADUZIONE DEI PIATTI (Scrivi il nome in italiano come chiave)
+    "Paella di Pesce": { "de": "Fisch-Paella", "en": "Seafood Paella", "zh": "海鲜饭", "sv": "Skaldjurspaella", "pl": "Paella z owocami morza" },
+    "Bistecca alla Griglia": { "de": "Gegrilltes Steak", "en": "Grilled Steak", "fr": "Steak Grillé", "zh": "烤牛排" },
+    "Cucinata a legna con pesce fresco": { "de": "Holzgefeuert con frischem Fisch", "en": "Wood-fired with fresh fish", "zh": "木火烤新鲜海鲜" }
 };
 
-/* --- DATI DAI TUOI FOGLI --- */
-const DATA = {
-    "Cibo": [
-        { nome: "Platos Principales", img: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400", piatti: [
-            { n: "Paella de Marisco", d: "Cocinada a leña con marisco fresco.", p: "18.50€", a: "🦐, 🐚, 🐟", m: "piatto.glb", f: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600" }
-        ]},
-        { nome: "Entrantes", img: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=400", piatti: [
-            { n: "Gambas al Ajillo", d: "Gamberetti saltati con aglio.", p: "12.00€", a: "🦐", m: "", f: "https://images.unsplash.com/photo-1625937751876-4cb6342893fa?w=600" }
-        ]}
-    ],
-    "Bevande": [
-        { nome: "Vinos", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400", piatti: [
-            { n: "Albariño D.O.", d: "Vino fresco Galiziano.", p: "22.00€", a: "🍷", m: "", f: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600" }
-        ]}
-    ]
-};
+/* =========================================================================
+   BLOCCO 4: DATABASE MENU (Scrivi tutto in ITALIANO)
+   ========================================================================= */
+const MENU_DATA = [
+    {
+        categoria: "cibo",
+        sotto_cat: "pesce",
+        piatti: [
+            { 
+                nome: "Paella di Pesce", 
+                prezzo: "22.00€", 
+                desc: "Cucinata a legna con pesce fresco", 
+                allergeni: "🦐", 
+                gf: true, 
+                foto: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600",
+                modello3d: "piatto.glb" 
+            }
+        ]
+    },
+    {
+        categoria: "cibo",
+        sotto_cat: "carne",
+        piatti: [
+            { nome: "Bistecca alla Griglia", prezzo: "25.00€", desc: "Taglio pregiato ai ferri", allergeni: "🥩", gf: true, foto: "https://images.unsplash.com/photo-1546241072-48010ad28c2c?w=600", modello3d: "steak.glb" }
+        ]
+    }
+];
 
-let lang = navigator.language.split('-')[0];
-if (!TRANSLATIONS[lang]) lang = "it";
-const t = (k) => TRANSLATIONS[lang][k] || k;
+/* =========================================================================
+   BLOCCO 5: LOGICA DI SISTEMA (Il "Cervello")
+   ========================================================================= */
+let userLang = navigator.language.split('-')[0]; 
+if (!TRANSLATIONS[userLang]) userLang = "en"; // Fallback se lingua non supportata
+
+// Funzione magica di traduzione
+function t(testo) {
+    if (TRANSLATIONS[userLang] && TRANSLATIONS[userLang][testo]) return TRANSLATIONS[userLang][testo];
+    if (TRANSLATIONS[testo] && TRANSLATIONS[testo][userLang]) return TRANSLATIONS[testo][userLang];
+    return testo; // Se non trova traduzioni, lascia in italiano
+}
 
 function init() {
-    document.getElementById('txt-food').innerText = t('food');
-    document.getElementById('txt-drinks').innerText = t('drinks');
+    renderHome();
 }
 
-function navToLanding() { switchScreen('scr-landing'); }
-
-function navToCategories(type) {
-    const list = document.getElementById('cat-list');
-    list.innerHTML = "";
-    DATA[type].forEach(cat => {
-        list.innerHTML += `
-            <div class="cat-card" onclick="navToItems('${type}', '${cat.nome}')">
-                <img src="${cat.img}">
-                <span>${t(cat.nome)}</span>
-            </div>`;
-    });
-    switchScreen('scr-categories');
+function renderHome() {
+    const container = document.getElementById('macro-list');
+    container.innerHTML = `
+        <div class="card" onclick="showCategory('cibo')" style="cursor:pointer; position:relative;">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600" style="width:100%; height:200px; object-fit:cover; filter:brightness(0.6);">
+            <h2 style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:white; font-size:2.5rem;">${t('cibo')}</h2>
+        </div>
+        <div class="card" onclick="showCategory('bevande')" style="cursor:pointer; position:relative;">
+            <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600" style="width:100%; height:200px; object-fit:cover; filter:brightness(0.6);">
+            <h2 style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:white; font-size:2.5rem;">${t('bevande')}</h2>
+        </div>
+    `;
 }
 
-function navToItems(type, catNome) {
-    const list = document.getElementById('items-list');
-    const catData = DATA[type].find(c => c.nome === catNome);
-    list.innerHTML = `<h2>${t(catNome)}</h2>`;
+function showCategory(cat) {
+    const itemsList = document.getElementById('items-list');
+    const filterBar = document.getElementById('allergen-filters');
+    document.getElementById('ui-back').innerText = t('indietro');
     
-    catData.piatti.forEach(p => {
-        list.innerHTML += `
-            <div class="item-card">
-                ${p.m ? `
-                    <model-viewer src="${p.m}" ar ar-modes="quick-look scene-viewer" interaction-prompt="none" shadow-intensity="1" auto-rotate poster="${p.f}">
-                        <button slot="ar-button" class="ar-button">${t('ar-btn')}</button>
-                    </model-viewer>` : `<img src="${p.f}" style="width:100%; height:250px; object-fit:cover;">`
-                }
-                <div class="item-info">
-                    <div style="display:flex; justify-content:space-between;"><h3>${p.n}</h3><span class="price">${p.p}</span></div>
-                    <p>${p.d}</p><div>${p.a}</div>
+    itemsList.innerHTML = "";
+    filterBar.innerHTML = `<div class="filter-btn active" onclick="filterItems('all')">${t('tutti')}</div>
+                           <div class="filter-btn" onclick="filterItems('gf')">🚫 ${t('senza-glutine')}</div>`;
+
+    const filteredData = MENU_DATA.filter(d => d.categoria === cat);
+    
+    filteredData.forEach(group => {
+        group.piatti.forEach(p => {
+            const card = document.createElement('div');
+            card.className = `card dish-card ${p.gf ? 'is-gf' : 'not-gf'}`;
+            card.innerHTML = `
+                <div style="position:relative">
+                    ${p.modello3d ? 
+                        `<model-viewer src="${p.modello3d}" ar ar-modes="scene-viewer quick-look webxr" 
+                            camera-controls touch-action="pan-y" 
+                            shadow-intensity="1" exposure="1" 
+                            ar-scale="auto" auto-rotate
+                            poster="${p.foto}">
+                            <button slot="ar-button" class="ar-button">${t('ar-btn')}</button>
+                        </model-viewer>` : 
+                        `<img src="${p.foto}" style="width:100%; height:250px; object-fit:cover;">`
+                    }
                 </div>
-            </div>`;
+                <div class="item-content">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="margin:0">${t(p.nome)} ${p.gf ? `<span class="badge-gf">GF</span>` : ''}</h3>
+                        <span class="price">${p.prezzo}</span>
+                    </div>
+                    <p style="color:#666">${t(p.desc)}</p>
+                    <div style="font-size:1.2rem">${p.allergeni}</div>
+                </div>
+            `;
+            itemsList.appendChild(card);
+        });
     });
-    document.getElementById('ui-back-cat').onclick = () => navToCategories(type);
+
     switchScreen('scr-items');
 }
 
+function filterItems(type) {
+    const cards = document.querySelectorAll('.dish-card');
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    cards.forEach(card => {
+        if(type === 'all') card.style.display = "block";
+        else if(type === 'gf') {
+            card.classList.contains('is-gf') ? card.style.display = "block" : card.style.display = "none";
+        }
+    });
+}
+
+function navToHome() { switchScreen('scr-home'); }
 function switchScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
 }
 
 init();
