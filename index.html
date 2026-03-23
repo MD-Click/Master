@@ -3,49 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEYS GRILL - AR Menu</title>
+    <title>MEYS GRILL - AR Digital Menu</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
     <style>
-        :root { --main: #c5a059; --dark: #1a1a1a; --white: #ffffff; --bg: #f8f8f8; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--dark); }
-        
-        /* Navigazione Schermate */
-        .screen { display: none; min-height: 100vh; width: 100%; box-sizing: border-box; }
-        .screen.active { display: block; animation: slideIn 0.3s ease-out; }
-
-        header { text-align: center; padding: 30px 20px; background: var(--white); border-bottom: 1px solid #eee; }
-        .logo { font-family: 'Playfair Display', serif; font-size: 2rem; margin: 0; text-transform: uppercase; cursor: pointer; }
-
-        /* 1. LANDING PAGE */
-        .landing-container { padding: 20px; display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
-        .btn-main { 
-            height: 200px; border-radius: 20px; position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        /* ==========================================
+           1. PERSONALIZZAZIONE STILE (LAYOUT & COLORI)
+           ========================================== */
+        :root {
+            --colore-principale: #c5a059;    /* Colore dei prezzi e dettagli */
+            --colore-sfondo: #f8f8f8;        /* Colore delle pagine */
+            --colore-testo: #1a1a1a;        /* Colore scritte principali */
+            --colore-pulsante: #1a1a1a;     /* Colore tasto AR */
+            --font-titoli: 'Playfair Display', serif;
+            --font-corpo: 'Poppins', sans-serif;
+            --dimensione-logo: 2.2rem;       /* Grandezza scritta Logo */
         }
-        .btn-main img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
-        .btn-main span { position: relative; color: white; font-size: 2.5rem; font-family: 'Playfair Display'; font-weight: 700; z-index: 10; }
 
-        /* 2. CATEGORIE */
-        .grid { padding: 20px; display: grid; gap: 15px; }
-        .cat-card { 
-            height: 120px; border-radius: 15px; position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-        }
-        .cat-card img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
-        .cat-card span { position: relative; color: white; font-size: 1.5rem; font-weight: 600; }
+        body { font-family: var(--font-corpo); margin: 0; background: var(--colore-sfondo); color: var(--colore-testo); }
+        header { text-align: center; padding: 30px 20px; background: white; border-bottom: 1px solid #ddd; }
+        .logo { font-family: var(--font-titoli); font-size: var(--dimensione-logo); text-transform: uppercase; cursor: pointer; letter-spacing: 2px; }
 
-        /* 3. LISTA PIATTI */
-        .item-card { background: var(--white); border-radius: 15px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .screen { display: none; min-height: 100vh; width: 100%; padding: 20px; box-sizing: border-box; }
+        .screen.active { display: block; animation: fadeIn 0.4s ease; }
+
+        /* Stile Landing (Food/Drink) */
+        .landing-grid { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
+        .btn-macro { height: 200px; border-radius: 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .btn-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
+        .btn-macro span { position: relative; color: white; font-size: 2.5rem; font-family: var(--font-titoli); z-index: 2; }
+
+        /* Stile Categorie */
+        .cat-card { height: 130px; border-radius: 15px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .cat-card img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
+        .cat-card span { position: relative; color: white; font-size: 1.7rem; font-family: var(--font-titoli); }
+
+        /* Stile Scheda Piatto */
+        .item-card { background: white; border-radius: 20px; margin-bottom: 30px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08); position: relative; }
         .item-info { padding: 20px; }
-        .item-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-        .item-price { color: var(--main); font-weight: 700; }
-        model-viewer { width: 100%; height: 300px; background: #eee; }
-        .ar-btn { background: var(--dark); color: white; border: none; width: 100%; padding: 15px; font-weight: 600; cursor: pointer; }
+        .item-header { display: flex; justify-content: space-between; align-items: baseline; }
+        .item-price { color: var(--colore-principale); font-weight: 700; font-size: 1.2rem; }
+        .allergens { font-size: 1.2rem; margin: 10px 0; }
+        .item-desc { color: #555; font-size: 0.95rem; line-height: 1.5; }
 
-        .back-bar { padding: 15px 20px; background: #eee; display: flex; align-items: center; cursor: pointer; font-weight: 600; color: var(--main); }
+        /* Stile 3D e Tasto AR */
+        model-viewer { width: 100%; height: 400px; background: #fafafa; }
+        .ar-btn { 
+            background: var(--colore-pulsante); color: white; border: none; padding: 18px; 
+            font-weight: 700; cursor: pointer; border-radius: 50px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            position: absolute; bottom: 25px; left: 10%; width: 80%; z-index: 10;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+        }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        .back-bar { padding: 15px; background: #eee; cursor: pointer; font-weight: 600; color: var(--colore-principale); margin-bottom: 10px; border-radius: 10px; display: inline-block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -53,12 +69,12 @@
 <header><h1 class="logo" onclick="location.reload()">MEYS GRILL</h1></header>
 
 <div id="scr-landing" class="screen active">
-    <div class="landing-container">
-        <div class="btn-main" onclick="navToCategories('food')">
+    <div class="landing-grid">
+        <div class="btn-macro" onclick="navToCategories('food')">
             <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600">
             <span>FOOD</span>
         </div>
-        <div class="btn-main" onclick="navToCategories('drinks')">
+        <div class="btn-macro" onclick="navToCategories('drinks')">
             <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600">
             <span>DRINKS</span>
         </div>
@@ -66,54 +82,89 @@
 </div>
 
 <div id="scr-categories" class="screen">
-    <div class="back-bar" onclick="navToLanding()">← TORNA ALLA SCELTA</div>
-    <div id="cat-grid" class="grid"></div>
+    <div class="back-bar" onclick="navToLanding()">← HOME</div>
+    <div id="cat-list"></div>
 </div>
 
 <div id="scr-items" class="screen">
-    <div id="back-to-cat-btn" class="back-bar">← TORNA ALLE CATEGORIE</div>
-    <div id="items-list" style="padding: 20px;"></div>
+    <div id="back-to-cat" class="back-bar">← CATEGORIE</div>
+    <div id="items-list"></div>
 </div>
 
 <script>
-/* --- CONFIGURAZIONE FACILE --- */
-const DATA = {
+/* ==========================================
+   2. GESTIONE DATI (AGGIUNGI/LEVA PIATTI QUI)
+   ========================================== */
+const MENU_DATA = {
     food: [
-        { id: "p1", nome: "Principales", foto: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400", 
-          items: [
-              { n: "Paella de Marisco", p: "18.50€", d: "Riso bomba e frutti di mare.", m: "piatto.glb" },
-              { n: "Fideuà", p: "16.00€", d: "Pasta corta e brodo di pesce.", m: "" }
-          ]
+        { 
+            id: "principali", 
+            nome: "Platos Principales", 
+            foto: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400",
+            piatti: [
+                { 
+                    n: "Paella de Marisco", 
+                    p: "18.50€", 
+                    d: "Cocinada a leña con marisco fresco de la costa.", 
+                    a: "🦐, 🐚, 🐟", 
+                    m: "piatto.glb" 
+                },
+                { 
+                    n: "Fideuà de Gandía", 
+                    p: "16.00€", 
+                    d: "Pasta corta cotta in brodo intenso di pesce.", 
+                    a: "🦐, 🐚, 🐟, 🌾", 
+                    m: "" 
+                },
+                { 
+                    n: "Arroz a Banda", 
+                    p: "17.00€", 
+                    d: "Riso cotto nel fondo di pesce, servito con alioli.", 
+                    a: "🐟, 🥚", 
+                    m: "" 
+                }
+            ]
         },
-        { id: "e1", nome: "Entrantes", foto: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=400",
-          items: [
-              { n: "Gambas al Ajillo", p: "12.00€", d: "Gamberetti aglio e olio.", m: "" }
-          ]
+        { 
+            id: "entrantes", 
+            nome: "Entrantes", 
+            foto: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=400",
+            piatti: [
+                { 
+                    n: "Gambas al Ajillo", 
+                    p: "12.00€", 
+                    d: "Gamberetti saltati con aglio, olio e peperoncino.", 
+                    a: "🦐", 
+                    m: "" 
+                }
+            ]
         }
     ],
     drinks: [
-        { id: "d1", nome: "Vini", foto: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400",
-          items: [
-              { n: "Albariño", p: "22.00€", d: "Vino bianco Galiziano.", m: "" }
-          ]
+        { 
+            id: "vini", 
+            nome: "Vini Bianchi", 
+            foto: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400",
+            piatti: [
+                { n: "Albariño D.O.", p: "22.00€", d: "Vino fresco e fruttato della Galizia.", a: "🍷", m: "" }
+            ]
         }
     ]
 };
 
-/* --- MOTORE DI NAVIGAZIONE --- */
-let activeType = '';
+/* ==========================================
+   3. MOTORE DI NAVIGAZIONE (NON TOCCARE)
+   ========================================== */
+let currentMacro = 'food';
 
-function navToLanding() {
-    switchScreen('scr-landing');
-}
+function navToLanding() { switchScreen('scr-landing'); }
 
 function navToCategories(type) {
-    activeType = type;
-    const grid = document.getElementById('cat-grid');
-    grid.innerHTML = '';
-    
-    DATA[type].forEach(cat => {
-        grid.innerHTML += `
+    currentMacro = type;
+    const container = document.getElementById('cat-list');
+    container.innerHTML = '';
+    MENU_DATA[type].forEach(cat => {
+        container.innerHTML += `
             <div class="cat-card" onclick="navToItems('${cat.id}')">
                 <img src="${cat.foto}">
                 <span>${cat.nome}</span>
@@ -123,21 +174,28 @@ function navToCategories(type) {
 }
 
 function navToItems(catId) {
-    const category = DATA[activeType].find(c => c.id === catId);
-    const list = document.getElementById('items-list');
-    list.innerHTML = `<h2 style="font-family:'Playfair Display'">${category.nome}</h2>`;
+    const catObj = MENU_DATA[currentMacro].find(c => c.id === catId);
+    const container = document.getElementById('items-list');
+    container.innerHTML = `<h2 style="font-family:var(--font-titoli); font-size:2rem; margin-bottom:20px;">${catObj.nome}</h2>`;
     
-    category.items.forEach(item => {
+    catObj.piatti.forEach(p => {
         let html = `<div class="item-card">`;
-        if(item.m) html += `<model-viewer src="${item.m}" ar ar-modes="webxr" camera-controls shadow-intensity="1"><button slot="ar-button" class="ar-btn">🥘 VEDI IN 3D</button></model-viewer>`;
+        if(p.m) {
+            html += `
+            <model-viewer src="${p.m}" ar ar-modes="scene-viewer quick-look webxr" ar-placement="floor"
+                camera-controls interaction-prompt="none" auto-rotate rotation-per-second="30deg" 
+                shadow-intensity="2" disable-zoom disable-pan>
+                <button slot="ar-button" class="ar-btn">🥘 VEDI SUL TUO TAVOLO</button>
+            </model-viewer>`;
+        }
         html += `<div class="item-info">
-                    <div class="item-header"><h3>${item.n}</h3><span class="item-price">${item.p}</span></div>
-                    <p>${item.d}</p>
+                    <div class="item-header"><h3 style="margin:0">${p.n}</h3><span class="item-price">${p.p}</span></div>
+                    <div class="allergens">${p.a}</div>
+                    <p class="item-desc">${p.d}</p>
                  </div></div>`;
-        list.innerHTML += html;
+        container.innerHTML += html;
     });
-
-    document.getElementById('back-to-cat-btn').onclick = () => navToCategories(activeType);
+    document.getElementById('back-to-cat').onclick = () => navToCategories(currentMacro);
     switchScreen('scr-items');
 }
 
