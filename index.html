@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sushi Time Nerja - Menu AR Fisso</title>
+    <title>Sushi Time Nerja - Menu Pro</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -13,30 +13,43 @@
             --oro: #c5a059; --nero: #1a1a1a; --bianco: #ffffff;
             --font-titoli: 'Playfair Display', serif; --font-corpo: 'Poppins', sans-serif;
         }
-        body { font-family: var(--font-corpo); margin: 0; background: #f8f8f8; }
+        body { font-family: var(--font-corpo); margin: 0; background: #f8f8f8; color: var(--nero); }
         header { text-align: center; padding: 20px; background: var(--bianco); border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+        
         .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; }
         .screen.active { display: block; animation: fadeIn 0.4s ease-out; }
-        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .cat-card { position: relative; height: 150px; border-radius: 15px; overflow: hidden; cursor: pointer; }
-        .cat-card img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
-        .cat-card span { position: absolute; bottom: 15px; left: 10px; color: white; font-family: var(--font-titoli); font-size: 1.2rem; }
+
+        /* LANDING GRID */
+        .landing-grid { display: flex; flex-direction: column; gap: 20px; }
+        .btn-macro { 
+            height: 200px; border-radius: 20px; position: relative; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; 
+        }
+        .btn-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
+        .btn-macro span { position: relative; color: white; font-size: 2.5rem; font-family: var(--font-titoli); z-index: 2; }
+
+        /* CATEGORY CARDS */
+        .cat-card { 
+            position: relative; height: 130px; border-radius: 15px; overflow: hidden; 
+            margin-bottom: 15px; cursor: pointer; 
+        }
+        .cat-card img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
+        .cat-card span { position: absolute; bottom: 15px; left: 15px; color: white; font-family: var(--font-titoli); font-size: 1.5rem; }
+
+        /* DISH CARDS */
         .item-card { background: white; border-radius: 20px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .item-info { padding: 15px; }
         .price { color: var(--oro); font-weight: 700; font-size: 1.2rem; }
         
-        /* BLOCCO AR: INTERAZIONE DISABILITATA */
-        model-viewer { 
-            width: 100%; height: 300px; background: #eee;
-            pointer-events: none; /* Impedisce il tocco sul modello nella lista */
-        }
+        /* AR: INTERAZIONE BLOCCATA */
+        model-viewer { width: 100%; height: 300px; background: #eee; pointer-events: none; }
         .ar-button {
             background: var(--nero); color: white; border: none; padding: 12px 20px;
             border-radius: 50px; position: absolute; bottom: 15px; right: 15px; 
-            font-weight: 600; pointer-events: auto; /* Riabilita il tocco solo sul pulsante */
+            font-weight: 600; pointer-events: auto;
         }
 
-        .back-btn { padding: 10px 0; color: var(--oro); cursor: pointer; font-weight: 600; }
+        .back-bar { padding: 12px; color: var(--oro); cursor: pointer; font-weight: 600; margin-bottom: 10px; background: white; border-radius: 10px; display: inline-block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -44,81 +57,106 @@
 
 <header><h1 style="font-family: var(--font-titoli); margin:0;">SUSHI TIME NERJA</h1></header>
 
-<div id="scr-home" class="screen active">
-    <div class="category-grid" id="cat-container"></div>
+<div id="scr-landing" class="screen active">
+    <div class="landing-grid">
+        <div class="btn-macro" onclick="navToCategories('Cibo')">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600">
+            <span id="txt-food">CIBO</span>
+        </div>
+        <div class="btn-macro" onclick="navToCategories('Bevande')">
+            <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600">
+            <span id="txt-drinks">BEVANDE</span>
+        </div>
+    </div>
+</div>
+
+<div id="scr-categories" class="screen">
+    <div class="back-bar" onclick="navToLanding()" id="ui-back-home">← HOME</div>
+    <div id="cat-list"></div>
 </div>
 
 <div id="scr-items" class="screen">
-    <div class="back-btn" onclick="navToHome()" id="ui-back"></div>
+    <div class="back-bar" id="ui-back-cat">← CATEGORIE</div>
     <div id="items-list"></div>
 </div>
 
 <script>
+/* --- TRADUZIONI (8 LINGUE) --- */
 const TRANSLATIONS = {
-    "it": { "indietro": "← Indietro", "ar-btn": "VEDI SUL TAVOLO", "Platos Principales": "Piatti Principali", "Entrantes": "Antipasti", "Vinos": "Vini" },
-    "en": { "indietro": "← Back", "ar-btn": "VIEW ON TABLE", "Platos Principales": "Main Courses", "Entrantes": "Starters", "Vinos": "Wines" },
-    "de": { "indietro": "← Zurück", "ar-btn": "AUF DEM TISCH SEHEN", "Platos Principales": "Hauptgerichte", "Entrantes": "Vorspeisen", "Vinos": "Weine" },
-    "es": { "indietro": "← Volver", "ar-btn": "VER EN LA MESA", "Platos Principales": "Platos Principales", "Entrantes": "Entrantes", "Vinos": "Vinos" },
-    "fr": { "indietro": "← Retour", "ar-btn": "VOIR SUR LA TABLE", "Platos Principales": "Plats Principaux", "Entrantes": "Entrées", "Vinos": "Vins" },
-    "zh": { "indietro": "← 返回", "ar-btn": "在桌上查看", "Platos Principales": "主菜", "Entrantes": "前菜", "Vinos": "葡萄酒" },
-    "pl": { "indietro": "← Powrót", "ar-btn": "ZOBACZ NA STOLE", "Platos Principales": "Dania Główne", "Entrantes": "Przystawki", "Vinos": "Wina" },
-    "sv": { "indietro": "← Tillbaka", "ar-btn": "VISA PÅ BORDET", "Platos Principales": "Huvudrätter", "Entrantes": "Förrätter", "Vinos": "Viner" }
+    "it": { "food": "CIBO", "drinks": "BEVANDE", "back": "Indietro", "ar-btn": "VEDI SUL TAVOLO", "Platos Principales": "Piatti Principali", "Entrantes": "Antipasti", "Vinos": "Vini" },
+    "en": { "food": "FOOD", "drinks": "DRINKS", "back": "Back", "ar-btn": "VIEW ON TABLE", "Platos Principales": "Main Courses", "Entrantes": "Starters", "Vinos": "Wines" },
+    "de": { "food": "ESSEN", "drinks": "GETRÄNKE", "back": "Zurück", "ar-btn": "AUF DEM TISCH SEHEN", "Platos Principales": "Hauptgerichte", "Entrantes": "Vorspeisen", "Vinos": "Weine" },
+    "es": { "food": "COMIDA", "drinks": "BEBIDAS", "back": "Volver", "ar-btn": "VER EN LA MESA", "Platos Principales": "Platos Principales", "Entrantes": "Entrantes", "Vinos": "Vinos" },
+    "fr": { "food": "NOURRITURE", "drinks": "BOISSONS", "back": "Retour", "ar-btn": "VOIR SUR LA TABLE", "Platos Principales": "Plats Principaux", "Entrantes": "Entrées", "Vinos": "Vins" },
+    "zh": { "food": "食物", "drinks": "饮料", "back": "返回", "ar-btn": "在桌上查看", "Platos Principales": "主菜", "Entrantes": "前菜", "Vinos": "葡萄酒" },
+    "pl": { "food": "JEDZENIE", "drinks": "NAPOJE", "back": "Powrót", "ar-btn": "ZOBACZ NA STOLE", "Platos Principales": "Dania Główne", "Entrantes": "Przystawki", "Vinos": "Wina" },
+    "sv": { "food": "MAT", "drinks": "DRYCKER", "back": "Tillbaka", "ar-btn": "VISA PÅ BORDET", "Platos Principales": "Huvudrätter", "Entrantes": "Förrätter", "Vinos": "Viner" }
 };
 
-// DATI DAI TUOI FOGLI
-const CATEGORIES = [
-    { nome: "Platos Principales", img: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400" },
-    { nome: "Entrantes", img: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=400" },
-    { nome: "Vinos", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400" }
-];
+/* --- DATI DAI TUOI FOGLI --- */
+const DATA = {
+    "Cibo": [
+        { nome: "Platos Principales", img: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400", piatti: [
+            { n: "Paella de Marisco", d: "Cocinada a leña con marisco fresco.", p: "18.50€", a: "🦐, 🐚, 🐟", m: "piatto.glb", f: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600" }
+        ]},
+        { nome: "Entrantes", img: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=400", piatti: [
+            { n: "Gambas al Ajillo", d: "Gamberetti saltati con aglio.", p: "12.00€", a: "🦐", m: "", f: "https://images.unsplash.com/photo-1625937751876-4cb6342893fa?w=600" }
+        ]}
+    ],
+    "Bevande": [
+        { nome: "Vinos", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400", piatti: [
+            { n: "Albariño D.O.", d: "Vino fresco Galiziano.", p: "22.00€", a: "🍷", m: "", f: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600" }
+        ]}
+    ]
+};
 
-const MENU_ITEMS = [
-    { n: "Paella de Marisco", cat: "Platos Principales", d: "Cocinada a leña con marisco fresco de la costa.", p: "18.50€", a: "🦐, 🐚, 🐟", m: "piatto.glb", f: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600" },
-    { n: "Gambas al Ajillo", cat: "Entrantes", d: "Gamberetti saltati con aglio, olio e peperoncino.", p: "12.00€", a: "🦐", m: "", f: "https://images.unsplash.com/photo-1625937751876-4cb6342893fa?w=600" },
-    { n: "Albariño D.O.", cat: "Vinos", d: "Vino fresco Galiziano.", p: "22.00€", a: "🍷", m: "", f: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600" }
-];
-
-let currentLang = navigator.language.split('-')[0];
-if (!TRANSLATIONS[currentLang]) currentLang = "it";
-
-function t(key) { return (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) ? TRANSLATIONS[currentLang][key] : key; }
+let lang = navigator.language.split('-')[0];
+if (!TRANSLATIONS[lang]) lang = "it";
+const t = (k) => TRANSLATIONS[lang][k] || k;
 
 function init() {
-    const container = document.getElementById('cat-container');
-    CATEGORIES.forEach(c => {
-        container.innerHTML += `<div class="cat-card" onclick="showCategory('${c.nome}')"><img src="${c.img}"><span>${t(c.nome)}</span></div>`;
-    });
+    document.getElementById('txt-food').innerText = t('food');
+    document.getElementById('txt-drinks').innerText = t('drinks');
 }
 
-function showCategory(catName) {
+function navToLanding() { switchScreen('scr-landing'); }
+
+function navToCategories(type) {
+    const list = document.getElementById('cat-list');
+    list.innerHTML = "";
+    DATA[type].forEach(cat => {
+        list.innerHTML += `
+            <div class="cat-card" onclick="navToItems('${type}', '${cat.nome}')">
+                <img src="${cat.img}">
+                <span>${t(cat.nome)}</span>
+            </div>`;
+    });
+    switchScreen('scr-categories');
+}
+
+function navToItems(type, catNome) {
     const list = document.getElementById('items-list');
-    document.getElementById('ui-back').innerText = t('indietro');
-    list.innerHTML = `<h2 style="font-family:var(--font-titoli)">${t(catName)}</h2>`;
+    const catData = DATA[type].find(c => c.nome === catNome);
+    list.innerHTML = `<h2>${t(catNome)}</h2>`;
     
-    MENU_ITEMS.filter(i => i.cat === catName).forEach(p => {
+    catData.piatti.forEach(p => {
         list.innerHTML += `
             <div class="item-card">
                 ${p.m ? `
-                    <model-viewer src="${p.m}" ar ar-modes="quick-look scene-viewer" 
-                        interaction-prompt="none" 
-                        shadow-intensity="1" 
-                        auto-rotate
-                        poster="${p.f}">
+                    <model-viewer src="${p.m}" ar ar-modes="quick-look scene-viewer" interaction-prompt="none" shadow-intensity="1" auto-rotate poster="${p.f}">
                         <button slot="ar-button" class="ar-button">${t('ar-btn')}</button>
-                    </model-viewer>` : 
-                    `<img src="${p.f}" style="width:100%; height:250px; object-fit:cover;">`
+                    </model-viewer>` : `<img src="${p.f}" style="width:100%; height:250px; object-fit:cover;">`
                 }
                 <div class="item-info">
                     <div style="display:flex; justify-content:space-between;"><h3>${p.n}</h3><span class="price">${p.p}</span></div>
-                    <p style="color:#666; font-size:0.9rem;">${p.d}</p>
-                    <div style="font-size:1.2rem;">${p.a}</div>
+                    <p>${p.d}</p><div>${p.a}</div>
                 </div>
             </div>`;
     });
+    document.getElementById('ui-back-cat').onclick = () => navToCategories(type);
     switchScreen('scr-items');
 }
 
-function navToHome() { switchScreen('scr-home'); }
 function switchScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
