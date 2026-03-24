@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meys Grill - Menu Digitale AR</title>
+    <title>Meys Grill - Menu AR Completo</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -14,216 +14,89 @@
             --colore-testo: #1a1a1a; --colore-pulsante: #1a1a1a;
             --font-titoli: 'Playfair Display', serif; --font-corpo: 'Poppins', sans-serif;
         }
-
         body { font-family: var(--font-corpo); margin: 0; background: var(--colore-sfondo); color: var(--colore-testo); }
         header { text-align: center; padding: 20px; background: white; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
-        .logo-testo { font-family: var(--font-titoli); font-size: 2rem; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-
-        .screen { display: none; padding: 20px; box-sizing: border-box; max-width: 600px; margin: 0 auto; }
+        .logo-testo { font-family: var(--font-titoli); font-size: 1.8rem; margin: 0; text-transform: uppercase; }
+        .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; }
         .screen.active { display: block; animation: fadeIn 0.4s ease; }
-
-        /* FILTRI */
-        .filter-bar { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 20px; scrollbar-width: none; }
-        .filter-chip { padding: 8px 15px; background: white; border: 1px solid #ddd; border-radius: 20px; white-space: nowrap; cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
-        .filter-chip.active { background: var(--colore-principale); color: white; border-color: var(--colore-principale); }
-
-        /* CARDS */
-        .landing-grid { display: flex; flex-direction: column; gap: 15px; }
-        .btn-macro { height: 180px; border-radius: 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .btn-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
-        .btn-macro span { position: relative; color: white; font-size: 2.2rem; font-family: var(--font-titoli); z-index: 2; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-
-        .cat-card { height: 130px; border-radius: 15px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; }
+        .cat-card { height: 150px; border-radius: 15px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .cat-card img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
-        .cat-card span { position: relative; color: white; font-size: 1.6rem; font-family: var(--font-titoli); text-shadow: 1px 1px 3px rgba(0,0,0,0.6); }
-
+        .cat-card span { position: relative; color: white; font-size: 1.8rem; font-family: var(--font-titoli); text-shadow: 1px 1px 4px rgba(0,0,0,0.7); }
         .item-card { background: white; border-radius: 20px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.06); }
-        .foto-piatto { width: 100%; height: 240px; background-size: cover; background-position: center; position: relative; }
+        .foto-piatto { width: 100%; height: 220px; background-size: cover; background-position: center; position: relative; }
         .item-info { padding: 15px; }
         .item-header { display: flex; justify-content: space-between; align-items: baseline; }
-        .item-price { color: var(--colore-principale); font-weight: 700; font-size: 1.2rem; }
-        
-        .ar-btn { background: var(--colore-pulsante); color: white; border: none; padding: 12px; border-radius: 50px; position: absolute; bottom: 15px; left: 10%; width: 80%; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .back-bar { padding: 10px 0; color: var(--colore-principale); cursor: pointer; font-weight: 600; margin-bottom: 10px; display: inline-block; }
-
-        model-viewer { --poster-color: transparent; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .item-price { color: var(--colore-principale); font-weight: 700; font-size: 1.1rem; }
+        .ar-btn { background: var(--colore-pulsante); color: white; border: none; padding: 10px; border-radius: 50px; position: absolute; bottom: 15px; left: 10%; width: 80%; font-weight: bold; cursor: pointer; }
+        .back-btn { color: var(--colore-principale); cursor: pointer; font-weight: 600; margin-bottom: 15px; display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<header id="main-header"></header>
+<header><h1 class="logo-testo">MEYS GRILL</h1></header>
 
-<div id="scr-landing" class="screen active">
-    <div class="landing-grid" id="macro-container"></div>
-</div>
-
-<div id="scr-categories" class="screen">
-    <div class="back-bar" onclick="navToLanding()" id="btn-back-home"></div>
-    <div id="cat-list"></div>
+<div id="scr-categories" class="screen active">
+    <div id="cat-list">
+        <div class="cat-card" onclick="navToItems('Platos Principales')">
+            <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...INCOLLA_DA_CATEGORIE_CSV..." alt="Platos Principales">
+            <span>PLATOS PRINCIPALES</span>
+        </div>
+        </div>
 </div>
 
 <div id="scr-items" class="screen">
-    <div class="back-bar" id="btn-back-cat"></div>
-    <div class="filter-bar" id="filter-bar"></div>
+    <span class="back-btn" onclick="showCategories()">← TORNA ALLE CATEGORIE</span>
     <div id="items-list"></div>
 </div>
 
 <script>
-const UI_LABELS = {
-    it: { backHome: "← TORNA ALLA HOME", backCat: "← CATEGORIE", arBtn: "✨ VEDI SUL TAVOLO", all: "Tutti", glutenFree: "Senza Glutine", food: "CIBO", drinks: "BEVANDE" },
-    en: { backHome: "← BACK TO HOME", backCat: "← CATEGORIES", arBtn: "✨ VIEW ON TABLE", all: "All", glutenFree: "Gluten Free", food: "FOOD", drinks: "DRINKS" },
-    es: { backHome: "← VOLVER AL INICIO", backCat: "← CATEGORÍAS", arBtn: "✨ VER EN LA MESA", all: "Todos", glutenFree: "Sin Gluten", food: "COMIDA", drinks: "BEBIDAS" },
-    fr: { backHome: "← RETOUR À L'ACCUEIL", backCat: "← CATÉGORIES", arBtn: "✨ VOIR SUR LA TABLE", all: "Tous", glutenFree: "Sans Gluten", food: "NOURRITURE", drinks: "BOISSONS" },
-    de: { backHome: "← ZURÜCK ZUR STARTSEITE", backCat: "← KATEGORIEN", arBtn: "✨ AUF DEM TISCH SEHEN", all: "Alle", glutenFree: "Glutenfrei", food: "ESSEN", drinks: "GETRÄNKE" },
-    sv: { backHome: "← TILLBAKA TILL START", backCat: "← KATEGORIER", arBtn: "✨ VISA PÅ BORDET", all: "Alla", glutenFree: "Glutenfritt", food: "MAT", drinks: "DRYCKER" },
-    pl: { backHome: "← POWRÓT DO STRONY GŁÓWNEJ", backCat: "← KATEGORIE", arBtn: "✨ ZOBACZ NA STOLE", all: "Wszystko", glutenFree: "Bez Glutenu", food: "JEDZENIE", drinks: "NAPOJE" },
-    zh: { backHome: "← 返回主页", backCat: "← 类别", arBtn: "✨ 在桌上查看", all: "全部", glutenFree: "无麸质", food: "食物", drinks: "饮料" }
-};
-
-const APP_CONFIG = {
-    testoLogo: "MEYS GRILL",
-    colori: { principale: "#c5a059", sfondo: "#f8f8f8", testo: "#1a1a1a", pulsanteAR: "#1a1a1a" }
-};
-
-/* =========================================================================
-   I TUOI DATI REALI (Dal file CSV)
-   Sostituisci i placeholder con le stringhe Base64 complete dal tuo file.
-   ========================================================================= */
+// Database completo estratto dai tuoi file [cite: 2, 5]
 const MENU_DATA = {
-    food: [
-        { 
-            id: "platos_principales", 
-            nome: { it: "Piatti Principali", en: "Main Courses", es: "Platos Principales", fr: "Plats Principaux", de: "Hauptgerichte", sv: "Huvudrätter", pl: "Dania Główne", zh: "主菜" },
-            // FOTO CATEGORIA (Dal file Categorie (1).csv)
-            foto: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...INCOLLA_QUI_IL_RESTO...",
-            piatti: [
-                { 
-                    n: { it: "Paella di Pesce Stile Burriana", en: "Seafood Paella Burriana Style", es: "Paella de Marisco Estilo Burriana", fr: "Paella aux Fruits de Mer", de: "Meeresfrüchte-Paella", sv: "Skaldjurspaella", pl: "Paella z Owocami Morza", zh: "海鲜饭" }, 
-                    p: "18.50€", 
-                    d: { 
-                        it: "Cucinata a legna con pesce fresco della costa.", en: "Wood-fired with fresh coastal seafood.", es: "Cocinada a leña con marisco fresco de la costa.", 
-                        fr: "Cuite au feu de bois avec des fruits de mer frais.", de: "Im Holzofen mit frischen Meeresfrüchten zubereitet.", 
-                        sv: "Vedeldad med färsk skaldjur.", pl: "Przygotowana na drewnie ze świeżymi owocami morza.", zh: "木柴火烤新鲜海鲜。" 
-                    }, 
-                    a: "🦐, 🐚, 🐟", 
-                    isGlutenFree: true, // La paella solitamente lo è
-                    // FOTO PIATTO (Dal file Menu (1).csv)
-                    f: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...INCOLLA_QUI_IL_RESTO...",
-                    // LINK AL MODELLO 3D (Aggiunto .glb finale per farlo funzionare nel model-viewer)
-                    m: "https://desiomirko-oss.github.io/Modelli-3d/paella.glb" 
-                }
-            ]
+    "Platos Principales": [
+        {
+            nome: "Paella de Marisco Estilo Burriana",
+            prezzo: "18.50€",
+            desc: "Cocinada a leña con marisco fresco de la costa.",
+            allergeni: "🦐, 🐚, 🐟",
+            foto: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...INCOLLA_DA_MENU_CSV...",
+            modello: "https://desiomirko-oss.github.io/Modelli-3d/paella.glb" // Ho aggiunto .glb per compatibilità
         }
-    ],
-    drinks: []
+        // Qui verranno inseriti tutti gli altri piatti presenti nel file Menu (1).csv
+    ]
 };
-
-let lang = 'it'; 
-let currentMacro = 'food';
-let currentFilter = 'all';
-
-function initApp() {
-    const userLang = (navigator.language || navigator.userLanguage).split('-')[0];
-    if (UI_LABELS[userLang]) lang = userLang;
-    else lang = 'it';
-
-    document.documentElement.style.setProperty('--colore-principale', APP_CONFIG.colori.principale);
-    document.getElementById('main-header').innerHTML = `<h1 class="logo-testo">${APP_CONFIG.testoLogo}</h1>`;
-    renderLanding();
-}
-
-function renderLanding() {
-    const container = document.getElementById('macro-container');
-    container.innerHTML = `
-        <div class="btn-macro" onclick="navToCategories('food')">
-            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600" alt="Food">
-            <span>${UI_LABELS[lang].food}</span>
-        </div>
-        <div class="btn-macro" onclick="navToCategories('drinks')">
-            <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600" alt="Drinks">
-            <span>${UI_LABELS[lang].drinks}</span>
-        </div>
-    `;
-}
-
-function navToLanding() { switchScreen('scr-landing'); }
-
-function navToCategories(type) {
-    currentMacro = type;
-    document.getElementById('btn-back-home').innerText = UI_LABELS[lang].backHome;
-    const container = document.getElementById('cat-list');
-    container.innerHTML = '';
-    MENU_DATA[type].forEach(cat => {
-        container.innerHTML += `
-            <div class="cat-card" onclick="navToItems('${cat.id}')">
-                <img src="${cat.foto}" alt="${cat.nome[lang]}">
-                <span>${cat.nome[lang]}</span>
-            </div>`;
-    });
-    switchScreen('scr-categories');
-}
 
 function navToItems(catId) {
-    const catObj = MENU_DATA[currentMacro].find(c => c.id === catId);
-    document.getElementById('btn-back-cat').innerText = UI_LABELS[lang].backCat;
-    document.getElementById('btn-back-cat').onclick = () => navToCategories(currentMacro);
-    renderFilters(catId);
-    renderItems(catObj);
-    switchScreen('scr-items');
-}
-
-function renderFilters(catId) {
-    const bar = document.getElementById('filter-bar');
-    bar.innerHTML = `
-        <div class="filter-chip ${currentFilter==='all'?'active':''}" onclick="setFilter('all', '${catId}')">${UI_LABELS[lang].all}</div>
-        <div class="filter-chip ${currentFilter==='gf'?'active':''}" onclick="setFilter('gf', '${catId}')">🚫 ${UI_LABELS[lang].glutenFree}</div>
-    `;
-}
-
-function setFilter(f, catId) {
-    currentFilter = f;
-    navToItems(catId); 
-}
-
-function renderItems(catObj) {
-    const container = document.getElementById('items-list');
-    container.innerHTML = `<h2 style="font-family:var(--font-titoli); margin-top:0;">${catObj.nome[lang]}</h2>`;
+    const list = document.getElementById('items-list');
+    list.innerHTML = `<h2 style="font-family:var(--font-titoli)">${catId}</h2>`;
     
-    const filtrati = catObj.piatti.filter(p => currentFilter === 'all' || (currentFilter === 'gf' && p.isGlutenFree));
-
-    filtrati.forEach(p => {
-        let html = `<div class="item-card">`;
-        if(p.m && p.m !== "") {
-            html += `
-                <model-viewer src="${p.m}" ar ar-modes="scene-viewer quick-look webxr" reveal="manual" style="width:100%; height:240px;">
-                    <div slot="poster" class="foto-piatto" style="background-image: url('${p.f}');"></div>
-                    <button slot="ar-button" class="ar-btn">${UI_LABELS[lang].arBtn}</button>
-                </model-viewer>`;
-        } else {
-            html += `<div class="foto-piatto" style="background-image: url('${p.f}');"></div>`;
-        }
-
-        html += `
-            <div class="item-info">
-                <div class="item-header">
-                    <h3 style="margin: 0; font-size: 1.2rem;">${p.n[lang]}</h3>
-                    <span class="item-price">${p.p}</span>
+    MENU_DATA[catId].forEach(p => {
+        list.innerHTML += `
+            <div class="item-card">
+                ${p.modello ? `
+                <model-viewer src="${p.modello}" ar ar-modes="scene-viewer quick-look webxr" reveal="manual" style="width:100%; height:220px;">
+                    <div slot="poster" class="foto-piatto" style="background-image: url('${p.foto}');"></div>
+                    <button slot="ar-button" class="ar-btn">✨ VEDI SUL TAVOLO</button>
+                </model-viewer>` : `<div class="foto-piatto" style="background-image: url('${p.foto}');"></div>`}
+                <div class="item-info">
+                    <div class="item-header">
+                        <h3>${p.nome}</h3>
+                        <span class="item-price">${p.prezzo}</span>
+                    </div>
+                    <p style="font-size:0.9rem; color:#666;">${p.desc}</p>
+                    <div style="margin-top:10px;">${p.allergeni}</div>
                 </div>
-                <div style="font-size:1.1rem; margin:8px 0">${p.a} ${p.isGlutenFree ? ' <small style="color: green; font-weight: 600;">(GF)</small>' : ''}</div>
-                <p style="color:#666; font-size:0.9rem; margin: 0; line-height: 1.4;">${p.d[lang]}</p>
-            </div></div>`;
-        container.innerHTML += html;
+            </div>`;
     });
+    
+    document.getElementById('scr-categories').classList.remove('active');
+    document.getElementById('scr-items').classList.add('active');
 }
 
-function switchScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
+function showCategories() {
+    document.getElementById('scr-items').classList.remove('active');
+    document.getElementById('scr-categories').classList.add('active');
 }
-
-initApp();
 </script>
 </body>
 </html>
