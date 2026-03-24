@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Digitale AR - Pro</title>
+    <title>Meys Grill - Menu Digitale AR</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
     <style>
         :root {
-            --colore-principale: #c5a059;
-            --colore-sfondo: #f8f8f8;
-            --colore-testo: #1a1a1a;
-            --colore-pulsante: #1a1a1a;
-            --font-titoli: 'Playfair Display', serif;
-            --font-corpo: 'Poppins', sans-serif;
+            --colore-principale: #c5a059; --colore-sfondo: #f8f8f8;
+            --colore-testo: #1a1a1a; --colore-pulsante: #1a1a1a;
+            --font-titoli: 'Playfair Display', serif; --font-corpo: 'Poppins', sans-serif;
         }
 
         body { font-family: var(--font-corpo); margin: 0; background: var(--colore-sfondo); color: var(--colore-testo); }
@@ -27,18 +24,12 @@
 
         /* FILTRI */
         .filter-bar { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 20px; scrollbar-width: none; }
-        .filter-chip { 
-            padding: 8px 15px; background: white; border: 1px solid #ddd; border-radius: 20px; 
-            white-space: nowrap; cursor: pointer; font-size: 0.9rem; transition: 0.3s;
-        }
+        .filter-chip { padding: 8px 15px; background: white; border: 1px solid #ddd; border-radius: 20px; white-space: nowrap; cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
         .filter-chip.active { background: var(--colore-principale); color: white; border-color: var(--colore-principale); }
 
-        /* GRID & CARDS */
+        /* CARDS */
         .landing-grid { display: flex; flex-direction: column; gap: 15px; }
-        .btn-macro { 
-            height: 180px; border-radius: 20px; position: relative; overflow: hidden; 
-            display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+        .btn-macro { height: 180px; border-radius: 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
         .btn-macro span { position: relative; color: white; font-size: 2.2rem; font-family: var(--font-titoli); z-index: 2; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
 
@@ -52,18 +43,10 @@
         .item-header { display: flex; justify-content: space-between; align-items: baseline; }
         .item-price { color: var(--colore-principale); font-weight: 700; font-size: 1.2rem; }
         
-        /* PULSANTE AR */
-        .ar-btn { 
-            background: var(--colore-pulsante); color: white; border: none; padding: 12px; 
-            border-radius: 50px; position: absolute; bottom: 15px; left: 10%; width: 80%; 
-            font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
+        .ar-btn { background: var(--colore-pulsante); color: white; border: none; padding: 12px; border-radius: 50px; position: absolute; bottom: 15px; left: 10%; width: 80%; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .back-bar { padding: 10px 0; color: var(--colore-principale); cursor: pointer; font-weight: 600; margin-bottom: 10px; display: inline-block; }
 
-        /* Nasconde lo sfondo del model-viewer per mostrare solo la foto */
         model-viewer { --poster-color: transparent; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -87,9 +70,6 @@
 </div>
 
 <script>
-/* =========================================================================
-   1. DIZIONARIO TRADUZIONI (8 LINGUE)
-   ========================================================================= */
 const UI_LABELS = {
     it: { backHome: "← TORNA ALLA HOME", backCat: "← CATEGORIE", arBtn: "✨ VEDI SUL TAVOLO", all: "Tutti", glutenFree: "Senza Glutine", food: "CIBO", drinks: "BEVANDE" },
     en: { backHome: "← BACK TO HOME", backCat: "← CATEGORIES", arBtn: "✨ VIEW ON TABLE", all: "All", glutenFree: "Gluten Free", food: "FOOD", drinks: "DRINKS" },
@@ -107,82 +87,49 @@ const APP_CONFIG = {
 };
 
 /* =========================================================================
-   2. DATI MENU (8 LINGUE PER OGNI TESTO)
+   I TUOI DATI REALI (Dal file CSV)
+   Sostituisci i placeholder con le stringhe Base64 complete dal tuo file.
    ========================================================================= */
 const MENU_DATA = {
     food: [
         { 
-            id: "principali", 
+            id: "platos_principales", 
             nome: { it: "Piatti Principali", en: "Main Courses", es: "Platos Principales", fr: "Plats Principaux", de: "Hauptgerichte", sv: "Huvudrätter", pl: "Dania Główne", zh: "主菜" },
-            foto: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400",
+            // FOTO CATEGORIA (Dal file Categorie (1).csv)
+            foto: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...INCOLLA_QUI_IL_RESTO...",
             piatti: [
                 { 
-                    n: { it: "Paella di Pesce", en: "Seafood Paella", es: "Paella de Marisco", fr: "Paella aux Fruits de Mer", de: "Meeresfrüchte-Paella", sv: "Skaldjurspaella", pl: "Paella z Owocami Morza", zh: "海鲜饭" }, 
+                    n: { it: "Paella di Pesce Stile Burriana", en: "Seafood Paella Burriana Style", es: "Paella de Marisco Estilo Burriana", fr: "Paella aux Fruits de Mer", de: "Meeresfrüchte-Paella", sv: "Skaldjurspaella", pl: "Paella z Owocami Morza", zh: "海鲜饭" }, 
                     p: "18.50€", 
                     d: { 
-                        it: "Cucinata a legna con pesce fresco.", en: "Wood-fired with fresh seafood.", es: "Cocinada a leña con marisco fresco.", 
+                        it: "Cucinata a legna con pesce fresco della costa.", en: "Wood-fired with fresh coastal seafood.", es: "Cocinada a leña con marisco fresco de la costa.", 
                         fr: "Cuite au feu de bois avec des fruits de mer frais.", de: "Im Holzofen mit frischen Meeresfrüchten zubereitet.", 
                         sv: "Vedeldad med färsk skaldjur.", pl: "Przygotowana na drewnie ze świeżymi owocami morza.", zh: "木柴火烤新鲜海鲜。" 
                     }, 
-                    a: "🦐, 🐚", 
-                    isGlutenFree: true,
-                    f: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600",
-                    m: "piatto.glb" // QUESTO HA L'AR
-                },
-                { 
-                    n: { it: "Fideuà", en: "Fideuà Pasta", es: "Fideuà", fr: "Fideuà", de: "Fideuà", sv: "Fideuà", pl: "Fideuà", zh: "短面条海鲜饭" }, 
-                    p: "16.00€", 
-                    d: { 
-                        it: "Pasta corta in brodo di pesce.", en: "Short pasta in fish broth.", es: "Pasta corta en caldo de pescado.",
-                        fr: "Pâtes courtes dans un bouillon de poisson.", de: "Kurze Nudeln in Fischbrühe.",
-                        sv: "Kort pasta i fiskbuljong.", pl: "Krótki makaron w bulionie rybnym.", zh: "鱼汤煮短面。"
-                    }, 
-                    a: "🦐, 🌾", 
-                    isGlutenFree: false,
-                    f: "https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=600",
-                    m: "" // QUESTO NON HA L'AR, MOSTRERA' SOLO LA FOTO
+                    a: "🦐, 🐚, 🐟", 
+                    isGlutenFree: true, // La paella solitamente lo è
+                    // FOTO PIATTO (Dal file Menu (1).csv)
+                    f: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...INCOLLA_QUI_IL_RESTO...",
+                    // LINK AL MODELLO 3D (Aggiunto .glb finale per farlo funzionare nel model-viewer)
+                    m: "https://desiomirko-oss.github.io/Modelli-3d/paella.glb" 
                 }
             ]
         }
     ],
-    drinks: [
-        { 
-            id: "vini", 
-            nome: { it: "Vini", en: "Wines", es: "Vinos", fr: "Vins", de: "Weine", sv: "Viner", pl: "Wina", zh: "葡萄酒" },
-            foto: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400",
-            piatti: [
-                { 
-                    n: { it: "Vino Bianco", en: "White Wine", es: "Vino Blanco", fr: "Vin Blanc", de: "Weißwein", sv: "Vitt Vin", pl: "Białe Wino", zh: "白葡萄酒" }, 
-                    p: "15.00€", 
-                    d: { 
-                        it: "Fresco e fruttato", en: "Fresh and fruity", es: "Fresco y afrutado",
-                        fr: "Frais et fruité", de: "Frisch und fruchtig", sv: "Friskt och fruktigt", pl: "Świeże i owocowe", zh: "清新果香"
-                    }, 
-                    a: "🍷", isGlutenFree: true, f: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600", m: "" 
-                }
-            ]
-        }
-    ]
+    drinks: []
 };
 
-/* =========================================================================
-   3. LOGICA DELL'APPLICAZIONE
-   ========================================================================= */
 let lang = 'it'; 
 let currentMacro = 'food';
 let currentFilter = 'all';
 
 function initApp() {
     const userLang = (navigator.language || navigator.userLanguage).split('-')[0];
-    if (UI_LABELS[userLang]) {
-        lang = userLang;
-    } else {
-        lang = 'it'; // Fallback se la lingua non è tra le 8 supportate
-    }
+    if (UI_LABELS[userLang]) lang = userLang;
+    else lang = 'it';
 
     document.documentElement.style.setProperty('--colore-principale', APP_CONFIG.colori.principale);
     document.getElementById('main-header').innerHTML = `<h1 class="logo-testo">${APP_CONFIG.testoLogo}</h1>`;
-    
     renderLanding();
 }
 
@@ -221,7 +168,6 @@ function navToItems(catId) {
     const catObj = MENU_DATA[currentMacro].find(c => c.id === catId);
     document.getElementById('btn-back-cat').innerText = UI_LABELS[lang].backCat;
     document.getElementById('btn-back-cat').onclick = () => navToCategories(currentMacro);
-    
     renderFilters(catId);
     renderItems(catObj);
     switchScreen('scr-items');
@@ -248,16 +194,13 @@ function renderItems(catObj) {
 
     filtrati.forEach(p => {
         let html = `<div class="item-card">`;
-        
-        if(p.m) {
-            /* REVEAL="MANUAL" blocca l'anteprima 3D, mostrando solo la foto fino al click del pulsante AR */
+        if(p.m && p.m !== "") {
             html += `
                 <model-viewer src="${p.m}" ar ar-modes="scene-viewer quick-look webxr" reveal="manual" style="width:100%; height:240px;">
                     <div slot="poster" class="foto-piatto" style="background-image: url('${p.f}');"></div>
                     <button slot="ar-button" class="ar-btn">${UI_LABELS[lang].arBtn}</button>
                 </model-viewer>`;
         } else {
-            /* Se non c'è il modello 3D, mostra solo la foto normale */
             html += `<div class="foto-piatto" style="background-image: url('${p.f}');"></div>`;
         }
 
