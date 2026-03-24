@@ -3,174 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu AR - Pro</title>
+    <title>Menu Digitale AR - Pro</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
     <style>
+        /* VARIABILI CSS (Modificate automaticamente dal Pannello di Controllo) */
         :root {
-            --primario: #c5a059;
-            --sfondo: #f8f8f8;
-            --testo: #1a1a1a;
-            --btn-ar: #1a1a1a;
-            --font-t: 'Playfair Display', serif;
-            --font-c: 'Poppins', sans-serif;
+            --colore-principale: #c5a059;
+            --colore-sfondo: #f8f8f8;
+            --colore-testo: #1a1a1a;
+            --colore-pulsante: #1a1a1a;
+            --font-titoli: 'Playfair Display', serif;
+            --font-corpo: 'Poppins', sans-serif;
         }
 
-        body { font-family: var(--font-c); margin: 0; background: var(--sfondo); color: var(--testo); -webkit-tap-highlight-color: transparent; }
-        header { text-align: center; padding: 25px 20px; background: white; border-bottom: 1px solid #eee; }
-        .logo-testo { font-family: var(--font-t); font-size: 2rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        body { font-family: var(--font-corpo); margin: 0; background: var(--colore-sfondo); color: var(--colore-testo); }
         
-        .screen { display: none; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        /* HEADER E LOGO */
+        header { text-align: center; padding: 25px 20px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: center; min-height: 60px; }
+        .logo-container { cursor: pointer; }
+        .logo-testo { font-family: var(--font-titoli); font-size: 2.2rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        .logo-immagine { max-height: 60px; object-fit: contain; }
+
+        .screen { display: none; min-height: 100vh; width: 100%; padding: 20px; box-sizing: border-box; }
         .screen.active { display: block; animation: fadeIn 0.4s ease; }
 
-        .grid-flex { display: flex; flex-direction: column; gap: 15px; }
-        .card-macro { height: 180px; border-radius: 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .card-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
-        .card-macro span { position: relative; color: white; font-size: 2.2rem; font-family: var(--font-t); z-index: 2; }
+        /* SCHERMATA LANDING */
+        .landing-grid { display: flex; flex-direction: column; gap: 20px; margin-top: 10px; }
+        .btn-macro { height: 200px; border-radius: 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .btn-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
+        .btn-macro span { position: relative; color: white; font-size: 2.5rem; font-family: var(--font-titoli); z-index: 2; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
 
-        /* SCHEDA PIATTO */
-        .item-card { background: white; border-radius: 25px; margin-bottom: 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        
-        .media-box { width: 100%; height: 320px; position: relative; }
-        
-        /* IL TRUCCO: Foto sopra, 3D sotto solo per l'AR */
-        .foto-piatto { width: 100%; height: 100%; background-size: cover; background-position: center; position: absolute; top:0; left:0; z-index: 1; }
-        
-        model-viewer { width: 100%; height: 100%; position: absolute; top:0; left:0; z-index: 2; --poster-color: transparent; }
+        /* SCHERMATA CATEGORIE */
+        .cat-card { height: 130px; border-radius: 15px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .cat-card img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
+        .cat-card span { position: relative; color: white; font-size: 1.8rem; font-family: var(--font-titoli); }
 
-        /* Tasto AR sempre visibile e cliccabile */
-        .ar-button { 
-            background: var(--btn-ar); color: white; border: none; padding: 16px 28px; 
+        /* SCHEDA PIATTI */
+        .item-card { background: white; border-radius: 20px; margin-bottom: 30px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+        .foto-piatto { width: 100%; height: 260px; background-size: cover; background-position: center; position: relative; }
+        .item-info { padding: 20px; }
+        .item-header { display: flex; justify-content: space-between; align-items: baseline; }
+        .item-price { color: var(--colore-principale); font-weight: 700; font-size: 1.2rem; }
+        .allergens { font-size: 1.2rem; margin: 10px 0; }
+        .item-desc { color: #555; font-size: 0.95rem; line-height: 1.5; }
+
+        /* TASTO AR (Sovrapposto alla foto 2D) */
+        .ar-btn { 
+            background: var(--colore-pulsante); color: white; border: none; padding: 16px; 
             font-weight: 700; cursor: pointer; border-radius: 50px;
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-            display: flex; align-items: center; gap: 10px; z-index: 10;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            position: absolute; bottom: 15px; left: 10%; width: 80%; z-index: 10;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.4); font-family: var(--font-corpo);
         }
 
-        .info-pasto { padding: 20px; }
-        .header-pasto { display: flex; justify-content: space-between; align-items: baseline; }
-        .prezzo { color: var(--primario); font-weight: 700; font-size: 1.3rem; }
-        .allergens { font-size: 1.1rem; margin: 10px 0; opacity: 0.8; }
-        .desc { color: #666; font-size: 0.95rem; line-height: 1.4; }
+        .back-bar { padding: 12px 20px; background: white; cursor: pointer; font-weight: 600; color: var(--colore-principale); margin-bottom: 15px; border-radius: 10px; display: inline-block; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
 
-        .btn-back { padding: 10px 15px; background: #fff; border-radius: 10px; display: inline-block; margin-bottom: 15px; cursor: pointer; font-weight: 600; color: var(--primario); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<header><h1 id="brand-name" class="logo-testo"></h1></header>
+<header>
+    <div id="header-logo" class="logo-container" onclick="location.reload()">
+        </div>
+</header>
 
 <div id="scr-landing" class="screen active">
-    <div class="grid-flex" id="landing-options"></div>
+    <div class="landing-grid">
+        <div class="btn-macro" onclick="navToCategories('food')">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600">
+            <span>FOOD</span>
+        </div>
+        <div class="btn-macro" onclick="navToCategories('drinks')">
+            <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600">
+            <span>DRINKS</span>
+        </div>
+    </div>
 </div>
 
 <div id="scr-categories" class="screen">
-    <div class="btn-back" onclick="showLanding()">← HOME</div>
-    <div class="grid-flex" id="cat-list"></div>
+    <div class="back-bar" onclick="navToLanding()">← TORNA ALLA HOME</div>
+    <div id="cat-list"></div>
 </div>
 
 <div id="scr-items" class="screen">
-    <div id="back-to-cat-trigger" class="btn-back">← CATEGORIE</div>
+    <div id="back-to-cat" class="back-bar">← TORNA ALLE CATEGORIE</div>
     <div id="items-list"></div>
 </div>
 
 <script>
-const CONFIG = {
-    nomeRistorante: "MEYS GRILL",
-    colori: { primario: "#c5a059", bottoneAR: "#1a1a1a" },
-    menu: {
-        food: {
-            label: "FOOD",
-            img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600",
-            categorie: [
-                {
-                    id: "cat1",
-                    nome: "Principales",
-                    foto: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400",
-                    piatti: [
-                        { 
-                            nome: "Paella de Marisco", 
-                            prezzo: "18.50€", 
-                            desc: "Ricetta tradizionale con pesce fresco.", 
-                            allergie: "🦐 🐚 🐟", 
-                            fotoPiatto: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600", 
-                            modello3d: "piatto.glb" 
-                        }
-                    ]
-                }
-            ]
-        },
-        drinks: {
-            label: "DRINKS",
-            img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600",
-            categorie: [
-                {
-                    id: "cat2",
-                    nome: "Vini",
-                    foto: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400",
-                    piatti: [
-                        { nome: "Albariño", prezzo: "22€", desc: "D.O. Rías Baixas.", allergie: "🍷", fotoPiatto: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600", modello3d: "" }
-                    ]
-                }
-            ]
-        }
+/* =========================================================================
+   1. PANNELLO DI CONTROLLO INTERFACCIA E STILE
+   ========================================================================= */
+const APP_CONFIG = {
+    // IMPOSTAZIONI LOGO
+    tipoLogo: "testo",                      // Scrivi "testo" o "immagine"
+    testoLogo: "MEYS GRILL",                // Il nome se usi 'testo'
+    urlLogoImmagine: "tuo-logo.png",        // Link all'immagine se usi 'immagine'
+
+    // IMPOSTAZIONI COLORI
+    colori: {
+        principale: "#c5a059",              // Colore dei prezzi e frecce (es. Oro)
+        sfondo: "#f8f8f8",                  // Colore di sfondo della pagina
+        testo: "#1a1a1a",                   // Colore delle scritte
+        pulsanteAR: "#1a1a1a"               // Colore del tasto "VEDI SUL TAVOLO"
+    },
+
+    // IMPOSTAZIONI FONT (Caricati da Google Fonts)
+    font: {
+        titoli: "'Playfair Display', serif",
+        corpo: "'Poppins', sans-serif"
     }
 };
 
-function init() {
-    document.getElementById('brand-name').innerText = CONFIG.nomeRistorante;
-    const l = document.getElementById('landing-options');
-    l.innerHTML = '';
-    for (let key in CONFIG.menu) {
-        l.innerHTML += `<div class="card-macro" onclick="showCategories('${key}')"><img src="${CONFIG.menu[key].img}"><span>${CONFIG.menu[key].label}</span></div>`;
+/* =========================================================================
+   2. GESTIONE MENU (AGGIUNGI O TOGLI PIATTI QUI)
+   ========================================================================= */
+const MENU_DATA = {
+    food: [
+        { 
+            id: "principali", nome: "Platos Principales", foto: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400",
+            piatti: [
+                { 
+                    n: "Paella de Marisco", 
+                    p: "18.50€", 
+                    d: "Cocinada a leña con marisco fresco de la costa.", 
+                    a: "🦐, 🐚, 🐟", 
+                    f: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600", // <--- FOTO DEL PIATTO
+                    m: "piatto.glb" // <--- FILE 3D
+                },
+                { 
+                    n: "Fideuà de Gandía", p: "16.00€", d: "Pasta corta cotta in brodo intenso di pesce.", a: "🦐, 🐚, 🐟, 🌾", 
+                    f: "https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=600",
+                    m: "" // <--- NESSUN 3D, mostrerà solo la foto
+                }
+            ]
+        },
+        { 
+            id: "entrantes", nome: "Entrantes", foto: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=400",
+            piatti: [
+                { n: "Gambas al Ajillo", p: "12.00€", d: "Gamberetti saltati con aglio, olio e peperoncino.", a: "🦐", f: "https://images.unsplash.com/photo-1625937751876-4cb6342893fa?w=600", m: "" }
+            ]
+        }
+    ],
+    drinks: [
+        { 
+            id: "vini", nome: "Vini Bianchi", foto: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400",
+            piatti: [{ n: "Albariño D.O.", p: "22.00€", d: "Vino fresco Galiziano.", a: "🍷", f: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600", m: "" }]
+        }
+    ]
+};
+
+/* =========================================================================
+   3. MOTORE DELL'APP (SI AUTOCONFIGURA DA SOLO)
+   ========================================================================= */
+let currentMacro = 'food';
+
+function initApp() {
+    // Applica colori e font
+    const root = document.documentElement;
+    root.style.setProperty('--colore-principale', APP_CONFIG.colori.principale);
+    root.style.setProperty('--colore-sfondo', APP_CONFIG.colori.sfondo);
+    root.style.setProperty('--colore-testo', APP_CONFIG.colori.testo);
+    root.style.setProperty('--colore-pulsante', APP_CONFIG.colori.pulsanteAR);
+    root.style.setProperty('--font-titoli', APP_CONFIG.font.titoli);
+    root.style.setProperty('--font-corpo', APP_CONFIG.font.corpo);
+
+    // Applica il Logo
+    const headerLogo = document.getElementById('header-logo');
+    if(APP_CONFIG.tipoLogo === 'immagine') {
+        headerLogo.innerHTML = `<img src="${APP_CONFIG.urlLogoImmagine}" class="logo-immagine" alt="Logo">`;
+    } else {
+        headerLogo.innerHTML = `<h1 class="logo-testo">${APP_CONFIG.testoLogo}</h1>`;
     }
 }
 
-function showLanding() { switchScreen('scr-landing'); }
+function navToLanding() { switchScreen('scr-landing'); }
 
-function showCategories(key) {
-    activeMacro = key;
+function navToCategories(type) {
+    currentMacro = type;
     const container = document.getElementById('cat-list');
     container.innerHTML = '';
-    CONFIG.menu[key].categorie.forEach(c => {
-        container.innerHTML += `<div class="card-macro" style="height:120px;" onclick="showItems('${c.id}')"><img src="${c.foto}"><span>${c.nome}</span></div>`;
+    MENU_DATA[type].forEach(cat => {
+        container.innerHTML += `<div class="cat-card" onclick="navToItems('${cat.id}')"><img src="${cat.foto}"><span>${cat.nome}</span></div>`;
     });
     switchScreen('scr-categories');
 }
 
-function showItems(catId) {
-    const cat = CONFIG.menu[activeMacro].categorie.find(c => c.id === catId);
+function navToItems(catId) {
+    const catObj = MENU_DATA[currentMacro].find(c => c.id === catId);
     const container = document.getElementById('items-list');
-    container.innerHTML = `<h2 style="font-family:var(--font-t)">${cat.nome}</h2>`;
-
-    cat.piatti.forEach(p => {
-        let card = `<div class="item-card">`;
-        card += `<div class="media-box">`;
+    container.innerHTML = `<h2 style="font-family:var(--font-titoli); font-size:2rem; margin-bottom:20px;">${catObj.nome}</h2>`;
+    
+    catObj.piatti.forEach(p => {
+        let html = `<div class="item-card">`;
         
-        if(p.modello3d) {
-            // Qui usiamo il model-viewer SOLO per il tasto AR. L'anteprima è coperta dalla foto.
-            card += `
-                <div class="foto-piatto" style="background-image:url('${p.fotoPiatto}')"></div>
-                <model-viewer src="${p.modello3d}" ar ar-modes="scene-viewer quick-look webxr" ar-placement="floor" ar-scale="auto">
-                    <button slot="ar-button" class="ar-button">🥘 VEDI SUL TAVOLO</button>
-                </model-viewer>`;
+        // Se c'è il modello 3D, inseriamo il visualizzatore "Nascosto" dietro la foto
+        if(p.m) {
+            html += `
+            <model-viewer src="${p.m}" ar ar-modes="scene-viewer quick-look webxr" ar-scale="auto" style="width: 100%; height: 260px; --poster-color: transparent;">
+                <div slot="poster" class="foto-piatto" style="background-image: url('${p.f}');"></div>
+                <button slot="ar-button" class="ar-btn">✨ VEDI IN AR SUL TAVOLO</button>
+            </model-viewer>`;
         } else {
-            card += `<div class="foto-piatto" style="background-image:url('${p.fotoPiatto}')"></div>`;
+            // Se non c'è il 3D, mostriamo solo la foto normale
+            html += `<div class="foto-piatto" style="background-image: url('${p.f}');"></div>`;
         }
-        card += `</div>`;
 
-        card += `<div class="info-pasto">
-                    <div class="header-pasto"><h3>${p.nome}</h3><span class="prezzo">${p.prezzo}</span></div>
-                    <div class="allergens">${p.allergie}</div>
-                    <p class="desc">${p.desc}</p>
+        html += `<div class="item-info">
+                    <div class="item-header"><h3 style="margin:0">${p.n}</h3><span class="item-price">${p.p}</span></div>
+                    <div class="allergens">${p.a}</div>
+                    <p class="item-desc">${p.d}</p>
                  </div></div>`;
-        container.innerHTML += card;
+        container.innerHTML += html;
     });
-
-    document.getElementById('back-to-cat-trigger').onclick = () => showCategories(activeMacro);
+    document.getElementById('back-to-cat').onclick = () => navToCategories(currentMacro);
     switchScreen('scr-items');
 }
 
@@ -180,7 +231,8 @@ function switchScreen(id) {
     window.scrollTo(0,0);
 }
 
-init();
+// Avvia configurazione
+initApp();
 </script>
 </body>
 </html>
