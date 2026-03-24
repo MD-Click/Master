@@ -3,42 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prova AR Maestro</title>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+    <title>MEYS GRILL - Menu AR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
-        body { margin: 0; font-family: sans-serif; }
-        model-viewer {
-            width: 100%;
-            height: 90vh;
-            background-color: #f0f0f0;
-        }
-        .controls {
-            padding: 10px;
-            text-align: center;
-        }
+        :root { --rosso: #ff0000; --oro: #c5a059; --nero: #1a1a1a; --bg: #f8f8f8; --font-t: 'Playfair Display', serif; --font-c: 'Poppins', sans-serif; }
+        body { font-family: var(--font-c); margin: 0; background: var(--bg); color: var(--nero); -webkit-tap-highlight-color: transparent; }
+        header { text-align: center; padding: 20px; background: white; border-bottom: 2px solid var(--rosso); }
+        .logo { font-family: var(--font-t); font-size: 1.8rem; margin: 0; }
+        .screen { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
+        .screen.active { display: block; }
+        .btn-back { padding: 10px 0; color: var(--rosso); font-weight: 700; cursor: pointer; display: inline-block; text-transform: uppercase; font-size: 0.8rem; }
+        .cat-card { height: 150px; border-radius: 15px; position: relative; overflow: hidden; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .cat-card img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
+        .cat-card span { position: relative; color: white; font-size: 2rem; font-family: var(--font-t); z-index: 2; }
+        .food-card { background: white; border-radius: 20px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); position: relative; }
+        .media-box { width: 100%; height: 300px; position: relative; background-size: cover; background-position: center; }
+        model-viewer { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 5; --poster-color: transparent; }
+        .ar-btn { background: var(--rosso) !important; color: white !important; border: none; padding: 15px 25px; border-radius: 50px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 999 !important; font-weight: 800; font-size: 0.9rem; box-shadow: 0 4px 20px rgba(255, 0, 0, 0.4); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .drink-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #eee; align-items: center; }
+        .drink-name { font-weight: 600; font-size: 1.1rem; }
+        .drink-desc { font-size: 0.8rem; color: #777; }
+        .drink-price { font-weight: 700; color: var(--nero); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
+<header><h1 class="logo">MEYS GRILL</h1></header>
+<div id="scr-home" class="screen active"><div id="home-options"></div></div>
+<div id="scr-items" class="screen">
+    <div class="btn-back" onclick="location.reload()">← MENU</div>
+    <div id="items-title" style="font-family:var(--font-t); font-size: 2rem; margin-bottom: 20px; border-bottom: 3px solid var(--rosso); display: inline-block;"></div>
+    <div id="items-list"></div>
+</div>
+<script>
+const CONFIG = {
+    // LINK RAW CORRETTO DALLA TUA FOTO (Branch "principale")
+    BASE_URL_3D: "https://raw.githubusercontent.com/desiomirko-oss/Modelli-3D/principale/",
+    menu: {
+        food: {
+            label: "CIBO",
+            img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600",
+            piatti: [
+                { n: "Paella de Marisco", p: "18.50€", a: "🦐 🐚 🐟", d: "Cucinata a leña con marisco fresco.", f: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600", m: "test.glb" }
+            ]
+        },
+        drinks: {
+            label: "BEVANDE",
+            img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600",
+            piatti: [
+                { n: "Albariño D.O.", p: "22€", d: "Vino bianco Galiziano.", a: "🍷" },
+                { n: "Rioja Reserva", p: "28€", d: "Rosso strutturato.", a: "🍷" }
+            ]
+        }
+    }
+};
 
-    <model-viewer 
-        src="test.glb" 
-        ar 
-        ar-modes="webxr scene-viewer quick-look" 
-        camera-controls 
-        poster="poster.webp" 
-        shadow-intensity="1" 
-        auto-rotate>
-        
-        <button slot="ar-button" style="background-color: white; border-radius: 4px; border: none; position: absolute; top: 16px; right: 16px; padding: 10px;">
-            👋 Visualizza in AR
-        </button>
-
-    </model-viewer>
-
-    <div class="controls">
-        <h1>Progetto Maestro</h1>
-        <p>Inquadra l'oggetto e premi il tasto AR per vederlo nel tuo spazio.</p>
-    </div>
-
+function init() {
+    const home = document.getElementById('home-options');
+    for (let key in CONFIG.menu) {
+        home.innerHTML += `<div class="cat-card" onclick="showCategory('${key}')"><img src="${CONFIG.menu[key].img}"><span>${CONFIG.menu[key].label}</span></div>`;
+    }
+}
+function showCategory(key) {
+    const data = CONFIG.menu[key];
+    document.getElementById('items-title').innerText = data.label;
+    const list = document.getElementById('items-list');
+    list.innerHTML = '';
+    data.piatti.forEach(p => {
+        if (key === 'food') {
+            list.innerHTML += `<div class="food-card"><div class="media-box" style="background-image: url('${p.f}')">${p.m ? `<model-viewer src="${CONFIG.BASE_URL_3D + p.m}" ar ar-modes="scene-viewer quick-look webxr" ar-placement="floor" ar-scale="auto" interaction-prompt="none" reveal="manual"><button slot="ar-button" class="ar-btn">🥘 VEDI SUL TAVOLO</button></model-viewer>` : ''}</div><div style="padding:15px;"><div style="display:flex; justify-content:space-between;"><b>${p.n}</b><span style="color:var(--rosso); font-weight:700;">${p.p}</span></div><p style="font-size:0.8rem; color:#666;">${p.d}</p></div></div>`;
+        } else {
+            list.innerHTML += `<div class="drink-row"><div><div class="drink-name">${p.n} ${p.a}</div><div class="drink-desc">${p.d}</div></div><div class="drink-price">${p.p}</div></div>`;
+        }
+    });
+    document.getElementById('scr-home').classList.remove('active');
+    document.getElementById('scr-items').classList.add('active');
+}
+init();
+</script>
 </body>
 </html>
