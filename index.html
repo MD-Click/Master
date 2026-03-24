@@ -19,10 +19,10 @@
         }
 
         body { font-family: var(--font-corpo); margin: 0; background: var(--colore-sfondo); color: var(--colore-testo); }
-        header { text-align: center; padding: 20px; background: white; border-bottom: 1px solid #ddd; }
-        .logo-testo { font-family: var(--font-titoli); font-size: 2rem; margin: 0; text-transform: uppercase; }
+        header { text-align: center; padding: 20px; background: white; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
+        .logo-testo { font-family: var(--font-titoli); font-size: 2rem; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
 
-        .screen { display: none; padding: 20px; box-sizing: border-box; }
+        .screen { display: none; padding: 20px; box-sizing: border-box; max-width: 600px; margin: 0 auto; }
         .screen.active { display: block; animation: fadeIn 0.4s ease; }
 
         /* FILTRI */
@@ -37,29 +37,34 @@
         .landing-grid { display: flex; flex-direction: column; gap: 15px; }
         .btn-macro { 
             height: 180px; border-radius: 20px; position: relative; overflow: hidden; 
-            display: flex; align-items: center; justify-content: center; cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .btn-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
-        .btn-macro span { position: relative; color: white; font-size: 2.2rem; font-family: var(--font-titoli); z-index: 2; }
+        .btn-macro span { position: relative; color: white; font-size: 2.2rem; font-family: var(--font-titoli); z-index: 2; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
 
-        .cat-card { height: 120px; border-radius: 15px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .cat-card { height: 130px; border-radius: 15px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; }
         .cat-card img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
-        .cat-card span { position: relative; color: white; font-size: 1.6rem; font-family: var(--font-titoli); }
+        .cat-card span { position: relative; color: white; font-size: 1.6rem; font-family: var(--font-titoli); text-shadow: 1px 1px 3px rgba(0,0,0,0.6); }
 
-        .item-card { background: white; border-radius: 20px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .item-card { background: white; border-radius: 20px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.06); }
         .foto-piatto { width: 100%; height: 240px; background-size: cover; background-position: center; position: relative; }
         .item-info { padding: 15px; }
         .item-header { display: flex; justify-content: space-between; align-items: baseline; }
-        .item-price { color: var(--colore-principale); font-weight: 700; }
+        .item-price { color: var(--colore-principale); font-weight: 700; font-size: 1.2rem; }
         
+        /* PULSANTE AR */
         .ar-btn { 
             background: var(--colore-pulsante); color: white; border: none; padding: 12px; 
-            border-radius: 50px; position: absolute; bottom: 15px; left: 10%; width: 80%; font-weight: bold;
+            border-radius: 50px; position: absolute; bottom: 15px; left: 10%; width: 80%; 
+            font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        .back-bar { padding: 10px 0; color: var(--colore-principale); cursor: pointer; font-weight: 600; margin-bottom: 10px; }
+        .back-bar { padding: 10px 0; color: var(--colore-principale); cursor: pointer; font-weight: 600; margin-bottom: 10px; display: inline-block; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Nasconde lo sfondo del model-viewer per mostrare solo la foto */
+        model-viewer { --poster-color: transparent; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -83,12 +88,17 @@
 
 <script>
 /* =========================================================================
-   1. CONFIGURAZIONE INTERFACCIA E TRADUZIONI 
+   1. DIZIONARIO TRADUZIONI (8 LINGUE)
    ========================================================================= */
 const UI_LABELS = {
     it: { backHome: "← TORNA ALLA HOME", backCat: "← CATEGORIE", arBtn: "✨ VEDI SUL TAVOLO", all: "Tutti", glutenFree: "Senza Glutine", food: "CIBO", drinks: "BEVANDE" },
     en: { backHome: "← BACK TO HOME", backCat: "← CATEGORIES", arBtn: "✨ VIEW ON TABLE", all: "All", glutenFree: "Gluten Free", food: "FOOD", drinks: "DRINKS" },
-    es: { backHome: "← VOLVER AL INICIO", backCat: "← CATEGORÍAS", arBtn: "✨ VER EN LA MESA", all: "Todos", glutenFree: "Sin Gluten", food: "COMIDA", drinks: "BEBIDAS" }
+    es: { backHome: "← VOLVER AL INICIO", backCat: "← CATEGORÍAS", arBtn: "✨ VER EN LA MESA", all: "Todos", glutenFree: "Sin Gluten", food: "COMIDA", drinks: "BEBIDAS" },
+    fr: { backHome: "← RETOUR À L'ACCUEIL", backCat: "← CATÉGORIES", arBtn: "✨ VOIR SUR LA TABLE", all: "Tous", glutenFree: "Sans Gluten", food: "NOURRITURE", drinks: "BOISSONS" },
+    de: { backHome: "← ZURÜCK ZUR STARTSEITE", backCat: "← KATEGORIEN", arBtn: "✨ AUF DEM TISCH SEHEN", all: "Alle", glutenFree: "Glutenfrei", food: "ESSEN", drinks: "GETRÄNKE" },
+    sv: { backHome: "← TILLBAKA TILL START", backCat: "← KATEGORIER", arBtn: "✨ VISA PÅ BORDET", all: "Alla", glutenFree: "Glutenfritt", food: "MAT", drinks: "DRYCKER" },
+    pl: { backHome: "← POWRÓT DO STRONY GŁÓWNEJ", backCat: "← KATEGORIE", arBtn: "✨ ZOBACZ NA STOLE", all: "Wszystko", glutenFree: "Bez Glutenu", food: "JEDZENIE", drinks: "NAPOJE" },
+    zh: { backHome: "← 返回主页", backCat: "← 类别", arBtn: "✨ 在桌上查看", all: "全部", glutenFree: "无麸质", food: "食物", drinks: "饮料" }
 };
 
 const APP_CONFIG = {
@@ -97,32 +107,40 @@ const APP_CONFIG = {
 };
 
 /* =========================================================================
-   2. DATI MENU (Traduzioni incluse per ogni piatto)
+   2. DATI MENU (8 LINGUE PER OGNI TESTO)
    ========================================================================= */
 const MENU_DATA = {
     food: [
         { 
             id: "principali", 
-            nome: { it: "Piatti Principali", en: "Main Courses", es: "Platos Principales" },
+            nome: { it: "Piatti Principali", en: "Main Courses", es: "Platos Principales", fr: "Plats Principaux", de: "Hauptgerichte", sv: "Huvudrätter", pl: "Dania Główne", zh: "主菜" },
             foto: "https://images.unsplash.com/photo-1512058560566-427a19db01cc?w=400",
             piatti: [
                 { 
-                    n: { it: "Paella di Pesce", en: "Seafood Paella", es: "Paella de Marisco" }, 
+                    n: { it: "Paella di Pesce", en: "Seafood Paella", es: "Paella de Marisco", fr: "Paella aux Fruits de Mer", de: "Meeresfrüchte-Paella", sv: "Skaldjurspaella", pl: "Paella z Owocami Morza", zh: "海鲜饭" }, 
                     p: "18.50€", 
-                    d: { it: "Cucinata a legna con pesce fresco.", en: "Wood-fired with fresh seafood.", es: "Cocinada a leña con marisco fresco." }, 
+                    d: { 
+                        it: "Cucinata a legna con pesce fresco.", en: "Wood-fired with fresh seafood.", es: "Cocinada a leña con marisco fresco.", 
+                        fr: "Cuite au feu de bois avec des fruits de mer frais.", de: "Im Holzofen mit frischen Meeresfrüchten zubereitet.", 
+                        sv: "Vedeldad med färsk skaldjur.", pl: "Przygotowana na drewnie ze świeżymi owocami morza.", zh: "木柴火烤新鲜海鲜。" 
+                    }, 
                     a: "🦐, 🐚", 
                     isGlutenFree: true,
                     f: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600",
-                    m: "piatto.glb" 
+                    m: "piatto.glb" // QUESTO HA L'AR
                 },
                 { 
-                    n: { it: "Fideuà", en: "Fideuà Pasta", es: "Fideuà" }, 
+                    n: { it: "Fideuà", en: "Fideuà Pasta", es: "Fideuà", fr: "Fideuà", de: "Fideuà", sv: "Fideuà", pl: "Fideuà", zh: "短面条海鲜饭" }, 
                     p: "16.00€", 
-                    d: { it: "Pasta corta in brodo di pesce.", en: "Short pasta in fish broth.", es: "Pasta corta en caldo de pescado." }, 
+                    d: { 
+                        it: "Pasta corta in brodo di pesce.", en: "Short pasta in fish broth.", es: "Pasta corta en caldo de pescado.",
+                        fr: "Pâtes courtes dans un bouillon de poisson.", de: "Kurze Nudeln in Fischbrühe.",
+                        sv: "Kort pasta i fiskbuljong.", pl: "Krótki makaron w bulionie rybnym.", zh: "鱼汤煮短面。"
+                    }, 
                     a: "🦐, 🌾", 
                     isGlutenFree: false,
                     f: "https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=600",
-                    m: "" 
+                    m: "" // QUESTO NON HA L'AR, MOSTRERA' SOLO LA FOTO
                 }
             ]
         }
@@ -130,10 +148,18 @@ const MENU_DATA = {
     drinks: [
         { 
             id: "vini", 
-            nome: { it: "Vini", en: "Wines", es: "Vinos" },
+            nome: { it: "Vini", en: "Wines", es: "Vinos", fr: "Vins", de: "Weine", sv: "Viner", pl: "Wina", zh: "葡萄酒" },
             foto: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400",
             piatti: [
-                { n: { it: "Vino Bianco", en: "White Wine", es: "Vino Blanco" }, p: "15.00€", d: { it: "Fresco e fruttato", en: "Fresh and fruity", es: "Fresco y frutado" }, a: "🍷", isGlutenFree: true, f: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600", m: "" }
+                { 
+                    n: { it: "Vino Bianco", en: "White Wine", es: "Vino Blanco", fr: "Vin Blanc", de: "Weißwein", sv: "Vitt Vin", pl: "Białe Wino", zh: "白葡萄酒" }, 
+                    p: "15.00€", 
+                    d: { 
+                        it: "Fresco e fruttato", en: "Fresh and fruity", es: "Fresco y afrutado",
+                        fr: "Frais et fruité", de: "Frisch und fruchtig", sv: "Friskt och fruktigt", pl: "Świeże i owocowe", zh: "清新果香"
+                    }, 
+                    a: "🍷", isGlutenFree: true, f: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600", m: "" 
+                }
             ]
         }
     ]
@@ -142,17 +168,18 @@ const MENU_DATA = {
 /* =========================================================================
    3. LOGICA DELL'APPLICAZIONE
    ========================================================================= */
-let lang = 'it'; // Default
+let lang = 'it'; 
 let currentMacro = 'food';
 let currentFilter = 'all';
 
 function initApp() {
-    // Rileva lingua
-    const userLang = navigator.language || navigator.userLanguage;
-    const shortLang = userLang.split('-')[0];
-    if (UI_LABELS[shortLang]) lang = shortLang;
+    const userLang = (navigator.language || navigator.userLanguage).split('-')[0];
+    if (UI_LABELS[userLang]) {
+        lang = userLang;
+    } else {
+        lang = 'it'; // Fallback se la lingua non è tra le 8 supportate
+    }
 
-    // Colori
     document.documentElement.style.setProperty('--colore-principale', APP_CONFIG.colori.principale);
     document.getElementById('main-header').innerHTML = `<h1 class="logo-testo">${APP_CONFIG.testoLogo}</h1>`;
     
@@ -163,11 +190,11 @@ function renderLanding() {
     const container = document.getElementById('macro-container');
     container.innerHTML = `
         <div class="btn-macro" onclick="navToCategories('food')">
-            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600" alt="Food">
             <span>${UI_LABELS[lang].food}</span>
         </div>
         <div class="btn-macro" onclick="navToCategories('drinks')">
-            <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600">
+            <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600" alt="Drinks">
             <span>${UI_LABELS[lang].drinks}</span>
         </div>
     `;
@@ -183,7 +210,7 @@ function navToCategories(type) {
     MENU_DATA[type].forEach(cat => {
         container.innerHTML += `
             <div class="cat-card" onclick="navToItems('${cat.id}')">
-                <img src="${cat.foto}">
+                <img src="${cat.foto}" alt="${cat.nome[lang]}">
                 <span>${cat.nome[lang]}</span>
             </div>`;
     });
@@ -210,32 +237,38 @@ function renderFilters(catId) {
 
 function setFilter(f, catId) {
     currentFilter = f;
-    navToItems(catId); // Refresh
+    navToItems(catId); 
 }
 
 function renderItems(catObj) {
     const container = document.getElementById('items-list');
-    container.innerHTML = `<h2 style="font-family:var(--font-titoli)">${catObj.nome[lang]}</h2>`;
+    container.innerHTML = `<h2 style="font-family:var(--font-titoli); margin-top:0;">${catObj.nome[lang]}</h2>`;
     
     const filtrati = catObj.piatti.filter(p => currentFilter === 'all' || (currentFilter === 'gf' && p.isGlutenFree));
 
     filtrati.forEach(p => {
         let html = `<div class="item-card">`;
+        
         if(p.m) {
+            /* REVEAL="MANUAL" blocca l'anteprima 3D, mostrando solo la foto fino al click del pulsante AR */
             html += `
-                <model-viewer src="${p.m}" ar ar-modes="scene-viewer quick-look webxr" ar-scale="auto" style="width:100%; height:240px;">
+                <model-viewer src="${p.m}" ar ar-modes="scene-viewer quick-look webxr" reveal="manual" style="width:100%; height:240px;">
                     <div slot="poster" class="foto-piatto" style="background-image: url('${p.f}');"></div>
                     <button slot="ar-button" class="ar-btn">${UI_LABELS[lang].arBtn}</button>
                 </model-viewer>`;
         } else {
+            /* Se non c'è il modello 3D, mostra solo la foto normale */
             html += `<div class="foto-piatto" style="background-image: url('${p.f}');"></div>`;
         }
 
         html += `
             <div class="item-info">
-                <div class="item-header"><h3>${p.n[lang]}</h3><span class="item-price">${p.p}</span></div>
-                <div style="font-size:1.1rem; margin:5px 0">${p.a} ${p.isGlutenFree ? ' <small>(GF)</small>' : ''}</div>
-                <p style="color:#666; font-size:0.9rem">${p.d[lang]}</p>
+                <div class="item-header">
+                    <h3 style="margin: 0; font-size: 1.2rem;">${p.n[lang]}</h3>
+                    <span class="item-price">${p.p}</span>
+                </div>
+                <div style="font-size:1.1rem; margin:8px 0">${p.a} ${p.isGlutenFree ? ' <small style="color: green; font-weight: 600;">(GF)</small>' : ''}</div>
+                <p style="color:#666; font-size:0.9rem; margin: 0; line-height: 1.4;">${p.d[lang]}</p>
             </div></div>`;
         container.innerHTML += html;
     });
