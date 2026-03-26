@@ -8,54 +8,60 @@
     <meta name="theme-color" content="#ffffff">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
     <style>
-        :root { --colore-principale: #000; --font-titoli: 'Playfair Display', serif; --font-corpo: 'Poppins', sans-serif; }
-        body { font-family: var(--font-corpo); margin: 0; background: #fff; -webkit-tap-highlight-color: transparent; }
+        :root { --colore-principale: #000; --colore-testo: #1a1a1a; --font-titoli: 'Playfair Display', serif; --font-corpo: 'Poppins', sans-serif; }
+        body { font-family: var(--font-corpo); margin: 0; background: #fff; color: var(--colore-testo); -webkit-tap-highlight-color: transparent; }
         
-        /* DESKTOP BLOCK */
-        #desktop-notice { display: none; text-align: center; padding: 50px 20px; height: 100vh; flex-direction: column; justify-content: center; background: #f4f4f4; }
+        /* BLOCCO DESKTOP */
+        #desktop-notice { display: none; text-align: center; padding: 50px 20px; height: 100vh; flex-direction: column; justify-content: center; align-items: center; background: #f4f4f4; }
         @media screen and (min-width: 768px) { #app-container { display: none; } #desktop-notice { display: flex; } }
 
-        header { text-align: center; padding: 15px; border-bottom: 1px solid #eee; position: sticky; top: 0; background: white; z-index: 100; }
-        .logo-testo { font-family: var(--font-titoli); font-size: 1.4rem; margin: 0; }
+        /* HEADER */
+        header { text-align: center; padding: 15px; border-bottom: 1px solid #eee; position: sticky; top: 0; background: white; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo-testo { font-family: var(--font-titoli); font-size: 1.4rem; margin: 0; letter-spacing: 1px; }
 
+        /* NAVIGAZIONE */
         .screen { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
         .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* FILTRI E BACKBAR */
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .back-btn { background: #f0f0f0; padding: 8px 15px; border-radius: 10px; font-weight: 600; font-size: 0.8rem; }
-        .filter-btn { border: 1px solid var(--colore-principale); background: transparent; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; }
-        .filter-btn.active { background: var(--colore-principale); color: white; }
+        .back-btn { background: #eee; padding: 8px 15px; border-radius: 10px; font-weight: 600; font-size: 0.8rem; cursor: pointer; }
+        .filter-btn { background: #fff; border: 1px solid var(--colore-principale); color: var(--colore-principale); padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 600; }
+        .filter-btn.active { background: var(--colore-principale); color: #fff; }
 
         /* MACRO BUTTONS */
         .btn-macro { height: 180px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .btn-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
-        .btn-macro span { position: relative; color: white; font-family: var(--font-titoli); font-size: 2rem; }
+        .btn-macro span { position: relative; color: white; font-family: var(--font-titoli); font-size: 2rem; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 
         /* ITEM CARDS */
-        .item-card { background: white; border-radius: 15px; margin-bottom: 20px; overflow: hidden; border: 1px solid #f0f0f0; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .foto-piatto { width: 100%; height: 250px; background-size: cover; background-position: center; position: relative; background-color: #eee; }
+        .item-card { background: white; border-radius: 15px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; }
+        .foto-piatto { width: 100%; height: 260px; background-size: cover; background-position: center; position: relative; background-color: #f9f9f9; }
         
-        /* AR BUTTON - Corretto per attivarsi */
+        /* BOTTONE AR PROFESSIONALE - Aggiornato per funzionare */
         .ar-btn { 
-            position: absolute; bottom: 15px; right: 15px; background: #000; color: white; 
-            border: none; padding: 10px 15px; border-radius: 25px; font-size: 0.75rem; font-weight: 600;
-            z-index: 10; display: flex; align-items: center; gap: 5px;
+            position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.8); color: white; 
+            border: none; padding: 10px 18px; border-radius: 30px; font-size: 0.8rem; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; backdrop-filter: blur(4px); z-index: 10;
         }
         model-viewer { width: 100%; height: 100%; position: absolute; top: 0; left: 0; --poster-color: transparent; }
 
         .info-box { padding: 15px; }
-        .price { color: var(--colore-principale); font-weight: 700; }
-        .desc { font-size: 0.85rem; color: #666; margin: 8px 0; line-height: 1.4; }
-        
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .price { color: var(--colore-principale); font-weight: 700; font-size: 1.1rem; }
+        .desc { font-size: 0.85rem; color: #666; margin: 8px 0; line-height: 1.5; }
     </style>
 </head>
 <body>
 
-<div id="desktop-notice"><h2>📱 Usa lo Smartphone</h2><p>Inquadra il QR per l'esperienza AR.</p></div>
+<div id="desktop-notice">
+    <h2>📱 Solo su Smartphone</h2>
+    <p>Inquadra il QR Code dal tuo telefono per vedere il menu in Realtà Aumentata.</p>
+</div>
 
 <div id="app-container">
     <header id="header-logo"></header>
@@ -66,7 +72,7 @@
 
     <div id="scr-items" class="screen">
         <div class="top-bar">
-            <div class="back-btn" onclick="location.reload()">← Indietro</div>
+            <div class="back-btn" onclick="location.reload()">← Home</div>
             <div id="filter-container"></div>
         </div>
         <div id="items-list"></div>
@@ -78,11 +84,14 @@
     let userLang = 'it';
 
     function init() {
-        if (typeof APP_CONFIG === 'undefined') return;
+        if (typeof APP_CONFIG === 'undefined' || typeof MENU_DATA === 'undefined') return;
+        
+        // Setup Grafico
         document.documentElement.style.setProperty('--colore-principale', APP_CONFIG.colori.principale);
         const header = document.getElementById('header-logo');
         header.innerHTML = APP_CONFIG.tipoLogo === 'testo' ? `<h1 class="logo-testo">${APP_CONFIG.testoLogo}</h1>` : `<img src="${APP_CONFIG.urlLogoImmagine}" style="max-height:45px">`;
 
+        // Home Buttons
         const container = document.getElementById('macro-container');
         if(MENU_DATA.food.length > 0) {
             container.innerHTML += `<div class="btn-macro" onclick="renderMenu('food')"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600"><span>CIBO</span></div>`;
@@ -101,35 +110,45 @@
         if(type === 'food') {
             filters.innerHTML = `<button class="filter-btn ${filter ? 'active' : ''}" onclick="renderMenu('food', ${!filter})">Senza Glutine 🌾</button>`;
         } else {
-            filters.innerHTML = `<div style="display:flex; gap:5px">
-                <button class="filter-btn ${filter === 'analcolico' ? 'active' : ''}" onclick="renderMenu('drinks', '${filter === 'analcolico' ? false : 'analcolico'}')">Analcolico</button>
-                <button class="filter-btn ${filter === 'bio' ? 'active' : ''}" onclick="renderMenu('drinks', '${filter === 'bio' ? false : 'bio'}')">Bio 🌿</button>
-            </div>`;
+            filters.innerHTML = `
+                <div style="display:flex; gap:5px">
+                    <button class="filter-btn ${filter === 'analcolico' ? 'active' : ''}" onclick="renderMenu('drinks', '${filter === 'analcolico' ? false : 'analcolico'}')">Analcolico</button>
+                    <button class="filter-btn ${filter === 'bio' ? 'active' : ''}" onclick="renderMenu('drinks', '${filter === 'bio' ? false : 'bio'}')">Bio 🌿</button>
+                </div>`;
         }
 
         MENU_DATA[type].forEach(cat => {
             cat.piatti.forEach(p => {
+                // Logica Filtri
                 if(filter === true && !p.glutenFree) return;
                 if(filter === 'analcolico' && !p.analcolico) return;
                 if(filter === 'bio' && !p.bio) return;
 
                 let html = `<div class="item-card">`;
                 
-                // LOGICA: Mostra foto solo se è FOOD
+                // LOGICA: Mostra foto e AR solo se è CIBO
                 if(type === 'food') {
                     html += `<div class="foto-piatto" style="background-image: url('${p.f}')">`;
                     if(p.m) {
-                        html += `<model-viewer src="${p.m}" ar ar-modes="scene-viewer quick-look" reveal="manual" camera-controls touch-action="none">
+                        // AGGIORNATO: Aggiunti attributi ar, ar-modes, camera-controls e touch-action per far funzionare l'AR
+                        html += `<model-viewer src="${p.m}" 
+                                    ar ar-modes="scene-viewer quick-look webxr" 
+                                    reveal="manual"
+                                    camera-controls touch-action="none">
                                     <button slot="ar-button" class="ar-btn">VEDI IN 3D 📦</button>
                                  </model-viewer>`;
                     }
                     html += `</div>`;
                 }
 
+                // Corpo della card (Uguale per tutti, contiene descrizione)
                 html += `<div class="info-box">
-                            <div style="display:flex; justify-content:space-between"><b>${p.n}</b> <span class="price">${p.p}</span></div>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <b style="font-size:1.15rem">${p.n}</b> 
+                                <span class="price">${p.p}</span>
+                            </div>
                             <p class="desc">${p.d}</p>
-                            <div style="font-size:0.7rem; opacity:0.5">${p.a ? 'Allergeni: ' + p.a : ''}</div>
+                            <div style="font-size:0.75rem; opacity:0.6">${p.a ? 'Allergeni: ' + p.a : ''}</div>
                          </div></div>`;
                 list.innerHTML += html;
             });
