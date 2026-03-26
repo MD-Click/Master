@@ -17,7 +17,7 @@ const MENU_DATA = {
                     d: "Salmone fresco abbattuto, servito con granella di pistacchio, avocado e riduzione al lime.", 
                     a: "Pesce, Frutta a guscio", 
                     f: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600",
-                    m: "modelli/salmone.glb", // Il file .glb deve esistere in questa cartella!
+                    m: "modelli/test.glb", // Il file .glb deve esistere in questa cartella!
                     glutenFree: true 
                 },
                 { 
