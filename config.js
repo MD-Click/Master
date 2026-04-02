@@ -12,12 +12,12 @@ const MENU_DATA = {
                     n: "Tagliere Misto", 
                     p: "15€", 
                     d: "Selezione di salumi e formaggi locali.", 
-                    f: "tagliere-misto-di-salumi.jpg", 
+                    f: "https://images.selex-insegne.stormreply.com/mediaObject/OLD/tagliere/original/tagliere.jpg", 
                     m: "Zucca.glb", 
                     a: "Lattosio",
                     sg: true, // true se è Senza Glutine
                     v: false  // true se è Vegetariano
-                }
+                },
                 { 
                     n: "Caprese Bufala", 
                     p: "12€", 
@@ -26,7 +26,7 @@ const MENU_DATA = {
                     a: "Lattosio",
                     sg: true,
                     v: true // È vegetariano
-                },
+                }
             ]
         },
         { 
