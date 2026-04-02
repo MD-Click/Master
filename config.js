@@ -4,21 +4,20 @@ const APP_CONFIG = {
 };
 
 const MENU_DATA = {
-    food: [
+    cibo: [
+        {
+            id: "Antipasti",
+            italiano: [
+                {
+                    N: "Tagliere Misto",
+                    P: "15€",
+                    D: "Selezione di salumi e formaggi locali.",
+                    F: "https://images.selex...", 
+                    sg: true, // Use true instead of VERO
+                    v: false  // Use false instead of falso
+                }
+            ]
         { 
-            id: "Antipasti", 
-            piatti: [
-                { 
-                    n: "Tagliere Misto", 
-                    p: "15€", 
-                    d: "Selezione di salumi e formaggi locali.", 
-                    f: "https://images.selex-insegne.stormreply.com/mediaObject/OLD/tagliere/original/tagliere.jpg", 
-                    m: "Zucca.glb", 
-                    a: "Lattosio",
-                    sg: true, // true se è Senza Glutine
-                    v: false  // true se è Vegetariano
-                },
-                { 
                     n: "Caprese Bufala", 
                     p: "12€", 
                     d: "Mozzarella di bufala campana DOP e pomodorini.", 
