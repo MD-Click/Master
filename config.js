@@ -24,7 +24,7 @@ const MENU_DATA = {
                     p: "22€", 
                     d: "Tartare di fassona con tuorlo marinato e tartufo nero.", 
                     f: "https://images.unsplash.com/photo-1544025162-811114bd4b5e?w=600",
-                    m: "", 
+                    m: "Zucca.glb", 
                     glutenFree: true 
                 }
             ]
