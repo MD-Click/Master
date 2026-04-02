@@ -15,7 +15,7 @@ const MENU_DATA = {
                     p: "18€", 
                     d: { it: "Salmone fresco scottato con granella di pepe rosa e asparagi croccanti.", en: "Seared fresh salmon with pink pepper flakes and crispy asparagus." }, 
                     f: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600",
-                    m: "modello_test.glb", 
+                    m: "Zucca.glb", 
                     glutenFree: true 
                 },
                 { 
