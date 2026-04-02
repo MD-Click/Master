@@ -15,7 +15,7 @@
         :root { --colore-principale: #000; --font-titoli: 'Playfair Display', serif; --font-corpo: 'Poppins', sans-serif; }
         body { font-family: var(--font-corpo); margin: 0; background: #fff; color: #1a1a1a; overflow-x: hidden; }
 
-        /* MODAL INSTALLAZIONE - Appare 1 sola volta grazie al localStorage */
+        /* MODAL INSTALLAZIONE */
         #install-modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.8); z-index: 1000; display: none; 
@@ -29,23 +29,27 @@
         .btn-web { background: none; border: none; color: #666; font-size: 0.85rem; text-decoration: underline; }
 
         header { text-align: center; padding: 15px; border-bottom: 1px solid #eee; position: sticky; top: 0; background: white; z-index: 100; }
-        .logo-testo { font-family: var(--font-titoli); font-size: 1.4rem; margin: 0; }
+        .logo-testo { font-family: var(--font-titoli); font-size: 1.4rem; margin: 0; text-transform: uppercase; }
 
         .screen { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
         .screen.active { display: block; }
 
-        /* FILTRI */
+        /* FILTRI & TOP BAR */
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; }
-        .back-btn { background: #f0f0f0; padding: 10px 15px; border-radius: 12px; font-weight: 600; font-size: 0.8rem; border: none; }
-        .filter-container { display: flex; gap: 5px; overflow-x: auto; }
+        .back-btn { background: #f0f0f0; padding: 10px 15px; border-radius: 12px; font-weight: 600; font-size: 0.8rem; border: none; cursor: pointer;}
+        .filter-container { display: flex; gap: 5px; overflow-x: auto; scrollbar-width: none; }
         .filter-btn { border: 1.5px solid #000; background: white; padding: 8px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
         .filter-btn.active { background: #000; color: white; }
 
-        /* CARDS */
-        .btn-macro { height: 160px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        /* CARDS MACRO E CATEGORIE */
+        .btn-macro { height: 160px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .btn-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
-        .btn-macro span { position: relative; color: white; font-family: var(--font-titoli); font-size: 2rem; }
+        .btn-macro span { position: relative; color: white; font-family: var(--font-titoli); font-size: 2rem; text-transform: uppercase;}
+        
+        /* Stile riutilizzato per le categorie */
+        .btn-categoria { height: 100px; border-radius: 15px; background: #f9f9f9; border: 1px solid #eee; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-family: var(--font-titoli); font-size: 1.5rem; color: #000; text-transform: capitalize; box-shadow: 0 4px 10px rgba(0,0,0,0.02); cursor: pointer;}
 
+        /* CARDS PIATTI */
         .item-card { background: white; border-radius: 20px; margin-bottom: 25px; overflow: hidden; border: 1px solid #f0f0f0; box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
         .foto-piatto { width: 100%; height: 280px; position: relative; background-color: #f9f9f9; background-size: cover; background-position: center; }
         
@@ -56,7 +60,6 @@
             display: flex; align-items: center; gap: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 10;
         }
         
-        /* Model Viewer potenziato per evitare il fluttuamento e il nero */
         model-viewer { width: 100%; height: 100%; position: absolute; top: 0; left: 0; --poster-color: transparent; }
 
         .info { padding: 15px; }
@@ -70,10 +73,10 @@
 
 <div id="install-modal">
     <div class="modal-content">
-        <h3 style="font-family: var(--font-titoli);">Menu Digitale</h3>
-        <p style="font-size: 0.9rem; color: #666;">Installa l'app per un'esperienza più veloce e fluida al tavolo.</p>
+        <h3 style="font-family: var(--font-titoli);" id="pwa-title">Menu Digitale</h3>
+        <p style="font-size: 0.9rem; color: #666;" id="pwa-desc">Installa l'app per un'esperienza più veloce e fluida al tavolo.</p>
         <button class="btn-install" id="btn-pwa">INSTALLA ORA</button>
-        <button class="btn-web" onclick="closeModal()">Continua nel browser</button>
+        <button class="btn-web" onclick="closeModal()" id="btn-web-close">Continua nel browser</button>
     </div>
 </div>
 
@@ -84,9 +87,16 @@
         <div id="macro-container"></div>
     </div>
 
+    <div id="scr-categories" class="screen">
+        <div class="top-bar">
+            <button class="back-btn" onclick="goHome()" id="btn-back-home">← Home</button>
+        </div>
+        <div id="categories-list"></div>
+    </div>
+
     <div id="scr-items" class="screen">
         <div class="top-bar">
-            <button class="back-btn" onclick="location.reload()">← Home</button>
+            <button class="back-btn" id="btn-back-cat">← Back</button>
             <div id="filter-container" class="filter-container"></div>
         </div>
         <div id="items-list"></div>
@@ -95,12 +105,39 @@
 
 <script src="config.js"></script>
 <script>
+    // --- 1. SISTEMA DI TRADUZIONE (8 Lingue) ---
+    const userLang = (navigator.language || navigator.userLanguage).substring(0, 2).toLowerCase();
+    const i18n = {
+        it: { pwaTitle: "Menu Digitale", pwaDesc: "Installa l'app per un'esperienza più veloce.", btnInstall: "INSTALLA ORA", btnWeb: "Continua nel browser", home: "← Home", back: "← Indietro", food: "CUCINA", drinks: "CANTINA", arBtn: "VEDI SUL TAVOLO 📦", gf: "Senza Glutine 🌾", an: "Analcolico", bio: "Bio 🌿", allergens: "Allergeni" },
+        en: { pwaTitle: "Digital Menu", pwaDesc: "Install the app for a faster experience.", btnInstall: "INSTALL NOW", btnWeb: "Continue in browser", home: "← Home", back: "← Back", food: "FOOD", drinks: "DRINKS", arBtn: "VIEW ON TABLE 📦", gf: "Gluten Free 🌾", an: "Alcohol Free", bio: "Organic 🌿", allergens: "Allergens" },
+        es: { pwaTitle: "Menú Digital", pwaDesc: "Instala la app para una experiencia más rápida.", btnInstall: "INSTALAR AHORA", btnWeb: "Continuar en navegador", home: "← Inicio", back: "← Volver", food: "COMIDA", drinks: "BEBIDAS", arBtn: "VER EN MESA 📦", gf: "Sin Gluten 🌾", an: "Sin Alcohol", bio: "Orgánico 🌿", allergens: "Alérgenos" },
+        fr: { pwaTitle: "Menu Numérique", pwaDesc: "Installez l'app pour une expérience plus rapide.", btnInstall: "INSTALLER", btnWeb: "Continuer sur le navigateur", home: "← Accueil", back: "← Retour", food: "CUISINE", drinks: "BOISSONS", arBtn: "VOIR SUR TABLE 📦", gf: "Sans Gluten 🌾", an: "Sans Alcool", bio: "Bio 🌿", allergens: "Allergènes" },
+        de: { pwaTitle: "Digitale Speisekarte", pwaDesc: "Installieren Sie die App für ein schnelleres Erlebnis.", btnInstall: "JETZT INSTALLIEREN", btnWeb: "Im Browser fortfahren", home: "← Startseite", back: "← Zurück", food: "SPEISEN", drinks: "GETRÄNKE", arBtn: "AUF TISCH ANSEHEN 📦", gf: "Glutenfrei 🌾", an: "Alkoholfrei", bio: "Bio 🌿", allergens: "Allergene" },
+        pt: { pwaTitle: "Menu Digital", pwaDesc: "Instale o app para uma experiência mais rápida.", btnInstall: "INSTALAR AGORA", btnWeb: "Continuar no navegador", home: "← Início", back: "← Voltar", food: "COMIDA", drinks: "BEBIDAS", arBtn: "VER NA MESA 📦", gf: "Sem Glúten 🌾", an: "Sem Álcool", bio: "Orgânico 🌿", allergens: "Alergênicos" },
+        zh: { pwaTitle: "数字菜单", pwaDesc: "安装应用程序以获得更快的体验。", btnInstall: "现在安装", btnWeb: "在浏览器中继续", home: "← 主页", back: "← 返回", food: "食物", drinks: "饮料", arBtn: "在桌面上查看 📦", gf: "无麸质 🌾", an: "无酒精", bio: "有机 🌿", allergens: "过敏原" },
+        ja: { pwaTitle: "デジタルメニュー", pwaDesc: "より速い体験のためにアプリをインストールしてください。", btnInstall: "今すぐインストール", btnWeb: "ブラウザで続行", home: "← ホーム", back: "← 戻る", food: "料理", drinks: "飲み物", arBtn: "テーブルで見る 📦", gf: "グルテンフリー 🌾", an: "ノンアルコール", bio: "オーガニック 🌿", allergens: "アレルゲン" }
+    };
+    
+    // Fallback all'inglese se la lingua non è tra le 8 supportate
+    const lang = i18n[userLang] ? userLang : 'en';
+    const t = (key) => i18n[lang][key];
+
+    // Helper per tradurre i dati del menu (es. se p.n è un oggetto {it: "Salmone", en: "Salmon"} o una stringa)
+    const getT = (field) => {
+        if (!field) return "";
+        if (typeof field === 'string') return field;
+        return field[lang] || field['en'] || field[Object.keys(field)[0]];
+    };
+
+    // --- 2. LOGICA PWA SOLO MOBILE ---
     let deferredPrompt;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     window.onload = () => {
+        applyTranslations();
         init();
-        // Controlla se l'utente ha già visto il modal
-        if (!localStorage.getItem('pwa_modal_done')) {
+        
+        if (isMobile && !localStorage.getItem('pwa_modal_done')) {
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
@@ -108,6 +145,15 @@
             });
         }
     };
+
+    function applyTranslations() {
+        document.getElementById('pwa-title').innerText = t('pwaTitle');
+        document.getElementById('pwa-desc').innerText = t('pwaDesc');
+        document.getElementById('btn-pwa').innerText = t('btnInstall');
+        document.getElementById('btn-web-close').innerText = t('btnWeb');
+        document.getElementById('btn-back-home').innerText = t('home');
+        document.documentElement.lang = lang;
+    }
 
     function closeModal() {
         document.getElementById('install-modal').style.display = 'none';
@@ -123,6 +169,15 @@
         closeModal();
     });
 
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function goHome() { showScreen('scr-landing'); }
+
+    // --- 3. INIZIALIZZAZIONE E FLUSSO ---
     function init() {
         if (typeof APP_CONFIG === 'undefined') return;
         document.documentElement.style.setProperty('--colore-principale', APP_CONFIG.colori.principale);
@@ -130,71 +185,92 @@
         header.innerHTML = `<h1 class="logo-testo">${APP_CONFIG.testoLogo}</h1>`;
 
         const container = document.getElementById('macro-container');
-        if(MENU_DATA.food.length > 0) {
-            container.innerHTML += `<div class="btn-macro" onclick="renderMenu('food')"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600"><span>CUCINA</span></div>`;
+        if(MENU_DATA.food && MENU_DATA.food.length > 0) {
+            container.innerHTML += `<div class="btn-macro" onclick="renderCategories('food')"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600"><span>${t('food')}</span></div>`;
         }
-        if(MENU_DATA.drinks.length > 0) {
-            container.innerHTML += `<div class="btn-macro" onclick="renderMenu('drinks')"><img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600"><span>CANTINA</span></div>`;
+        if(MENU_DATA.drinks && MENU_DATA.drinks.length > 0) {
+            container.innerHTML += `<div class="btn-macro" onclick="renderCategories('drinks')"><img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600"><span>${t('drinks')}</span></div>`;
         }
     }
 
-    function renderMenu(type, activeFilter = null) {
+    // NUOVA FUNZIONE: Mostra la lista delle categorie
+    function renderCategories(type) {
+        const list = document.getElementById('categories-list');
+        list.innerHTML = '';
+        
+        MENU_DATA[type].forEach(cat => {
+            const catName = getT(cat.id);
+            list.innerHTML += `<div class="btn-categoria" onclick="renderItems('${type}', '${cat.id}')">${catName}</div>`;
+        });
+        
+        showScreen('scr-categories');
+    }
+
+    // MODIFICATA: Mostra i piatti della singola categoria
+    function renderItems(type, categoryId, activeFilter = null) {
         const list = document.getElementById('items-list');
         const filterArea = document.getElementById('filter-container');
+        const backBtn = document.getElementById('btn-back-cat');
+        
         list.innerHTML = '';
-        filterArea.innerHTML = '';
+        backBtn.innerText = t('back');
+        backBtn.onclick = () => showScreen('scr-categories');
 
-        // RIPRISTINO FILTRI
+        // SETUP FILTRI TRADOTTI
         if(type === 'food') {
-            filterArea.innerHTML = `<button class="filter-btn ${activeFilter==='gf'?'active':''}" onclick="renderMenu('food', '${activeFilter==='gf'?null:'gf'}')">Senza Glutine 🌾</button>`;
+            filterArea.innerHTML = `<button class="filter-btn ${activeFilter==='gf'?'active':''}" onclick="renderItems('${type}', '${categoryId}', '${activeFilter==='gf'?null:'gf'}')">${t('gf')}</button>`;
         } else {
             filterArea.innerHTML = `
-                <button class="filter-btn ${activeFilter==='an'?'active':''}" onclick="renderMenu('drinks', '${activeFilter==='an'?null:'an'}')">Analcolico</button>
-                <button class="filter-btn ${activeFilter==='bio'?'active':''}" onclick="renderMenu('drinks', '${activeFilter==='bio'?null:'bio'}')">Bio 🌿</button>
+                <button class="filter-btn ${activeFilter==='an'?'active':''}" onclick="renderItems('${type}', '${categoryId}', '${activeFilter==='an'?null:'an'}')">${t('an')}</button>
+                <button class="filter-btn ${activeFilter==='bio'?'active':''}" onclick="renderItems('${type}', '${categoryId}', '${activeFilter==='bio'?null:'bio'}')">${t('bio')}</button>
             `;
         }
 
-        MENU_DATA[type].forEach(cat => {
-            cat.piatti.forEach(p => {
-                if(activeFilter === 'gf' && !p.glutenFree) return;
-                if(activeFilter === 'an' && !p.analcolico) return;
-                if(activeFilter === 'bio' && !p.bio) return;
+        const category = MENU_DATA[type].find(c => c.id === categoryId);
+        if(!category) return;
 
-                let html = `<div class="item-card">`;
-                
-                if(type === 'food') {
-                    html += `<div class="foto-piatto" style="background-image: url('${p.f}')">`;
-                    if(p.m) {
-                        // LOGICA AR: ar-placement="floor" serve per i tavoli. 
-                        // exposure, shadow-intensity e environment-image servono per non far vedere il modello nero.
-                        html += `<model-viewer src="${p.m}" 
-                                    ar ar-modes="scene-viewer quick-look webxr" 
-                                    ar-placement="floor" 
-                                    ar-scale="fixed" 
-                                    camera-controls 
-                                    touch-action="none" 
-                                    shadow-intensity="1" 
-                                    exposure="1" 
-                                    environment-image="neutral"
-                                    reveal="manual">
-                                    <button slot="ar-button" class="ar-btn">VEDI SUL TAVOLO 📦</button>
-                                 </model-viewer>`;
-                    }
-                    html += `</div>`;
+        category.piatti.forEach(p => {
+            if(activeFilter === 'gf' && !p.glutenFree) return;
+            if(activeFilter === 'an' && !p.analcolico) return;
+            if(activeFilter === 'bio' && !p.bio) return;
+
+            let html = `<div class="item-card">`;
+            
+            if(type === 'food') {
+                html += `<div class="foto-piatto" style="background-image: url('${p.f}')">`;
+                if(p.m) {
+                    // CONFIGURAZIONE AR STABILE PER TAVOLI
+                    html += `<model-viewer src="${p.m}" 
+                                ar ar-modes="webxr scene-viewer quick-look" 
+                                ar-placement="floor" 
+                                ar-scale="fixed" 
+                                bounds="tight"
+                                camera-controls 
+                                interaction-prompt="auto"
+                                touch-action="none" 
+                                shadow-intensity="1" 
+                                exposure="1" 
+                                environment-image="neutral"
+                                reveal="manual">
+                                <button slot="ar-button" class="ar-btn">${t('arBtn')}</button>
+                             </model-viewer>`;
                 }
+                html += `</div>`;
+            }
 
-                html += `<div class="info">
-                            <div style="display:flex; justify-content:space-between; align-items:center;"><b>${p.n}</b> <span class="price">${p.p}</span></div>
-                            <p class="desc">${p.d}</p>
-                            ${p.a ? `<div style="font-size:0.7rem; opacity:0.5">Allergeni: ${p.a}</div>` : ''}
-                         </div></div>`;
-                list.innerHTML += html;
-            });
+            const nome = getT(p.n);
+            const desc = getT(p.d);
+            const allergeni = getT(p.a);
+
+            html += `<div class="info">
+                        <div style="display:flex; justify-content:space-between; align-items:center;"><b>${nome}</b> <span class="price">${p.p}</span></div>
+                        <p class="desc">${desc}</p>
+                        ${allergeni ? `<div style="font-size:0.7rem; opacity:0.5">${t('allergens')}: ${allergeni}</div>` : ''}
+                     </div></div>`;
+            list.innerHTML += html;
         });
 
-        document.getElementById('scr-landing').classList.remove('active');
-        document.getElementById('scr-items').classList.add('active');
-        window.scrollTo(0,0);
+        showScreen('scr-items');
     }
 </script>
 </body>
