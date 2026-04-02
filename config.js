@@ -1,34 +1,40 @@
+const APP_CONFIG = {
+    testoLogo: "IL MIO RISTORANTE",
+    colori: { principale: "#000000" }
+};
+
 const MENU_DATA = {
     food: [
         { 
             id: "Antipasti", 
-            sottocategorie: [ // <--- Questo attiva la seconda pagina
-                {
-                    id: "Antipasti di Mare",
-                    piatti: [
-                        { n: "Crudo", p: "18€", d: "...", f: "...", m: "modello.glb", a: "Pesce" }
-                    ]
-                },
-                {
-                    id: "Antipasti di Terra",
-                    piatti: [
-                        { n: "Tagliere", p: "15€", d: "...", f: "...", a: "Lattosio" }
-                    ]
+            piatti: [
+                { 
+                    n: "Tagliere Misto", 
+                    p: "15€", 
+                    d: "Selezione di salumi e formaggi locali.", 
+                    f: "link_foto.jpg", 
+                    m: "modello.glb", // Il tuo modello 3D
+                    a: "Lattosio, Glutine" // Allergeni
                 }
             ]
         },
-        {
-            id: "Primi", // Se non metti sottocategorie, va diretto ai piatti
-            piatti: [
-                { n: "Pasta", p: "12€", d: "...", f: "...", a: "Glutine" }
-            ]
+        { 
+            id: "Primi", 
+            piatti: [ /* altri piatti qui */ ]
         }
     ],
     drinks: [
         { 
             id: "Cocktails", 
             piatti: [
-                { n: "Mojito", p: "8€", d: "...", f: "...", analcolico: true, a: "Nessuno" }
+                { 
+                    n: "Mojito", 
+                    p: "8€", 
+                    d: "Menta, lime, zucchero, rum.", 
+                    f: "foto_mojito.jpg", 
+                    analcolico: false, // Per il filtro analcolico
+                    a: "Nessuno" 
+                }
             ]
         }
     ]
