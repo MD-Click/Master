@@ -1,5 +1,5 @@
 const APP_CONFIG = {
-    testoLogo: "BENVENUTO",
+    testoLogo: "IL MIO RISTORANTE",
     colori: { principale: "#000000" }
 };
 
