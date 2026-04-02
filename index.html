@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Menu AR Pro</title>
+    
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -15,7 +16,7 @@
         
         /* LIVELLO 1: Layout Verticale */
         #macro-container { display: flex; flex-direction: column; gap: 15px; padding: 20px; }
-        .btn-macro { height: 180px; border-radius: 25px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .btn-macro { height: 180px; border-radius: 25px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #eee; }
         .btn-macro img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.45); }
         .btn-macro span { position: relative; color: white; font-family: var(--font-titoli); font-size: 2.2rem; text-transform: uppercase; letter-spacing: 2px; }
 
@@ -27,13 +28,13 @@
 
         /* LIVELLO 2: Categorie */
         .btn-list { display: flex; flex-direction: column; gap: 10px; }
-        .btn-item { background: #f9f9f9; border: 1px solid #eee; padding: 20px; border-radius: 15px; font-family: var(--font-titoli); font-size: 1.3rem; text-align: center; font-weight: bold; }
+        .btn-item { background: #f9f9f9; border: 1px solid #eee; padding: 20px; border-radius: 15px; font-family: var(--font-titoli); font-size: 1.3rem; text-align: center; font-weight: bold; cursor: pointer; }
 
         /* LIVELLO 3: Card Piatti */
         .item-card { background: white; border-radius: 20px; margin-bottom: 25px; overflow: hidden; border: 1px solid #f0f0f0; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .foto-piatto { width: 100%; height: 260px; background-size: cover; background-position: center; position: relative; background-color: #f5f5f5; }
         
-        /* FIX AR: Nessun'anteprima e modelli luminosi */
+        /* AR: Nessun'anteprima pesante e modelli luminosi */
         model-viewer { width: 100%; height: 100%; position: absolute; top: 0; left: 0; --poster-color: transparent; }
         .ar-btn { position: absolute; bottom: 15px; right: 15px; background: #000; color: white; border: none; padding: 12px 20px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
 
@@ -52,7 +53,7 @@
 <body>
 
 <div id="app-container">
-    <header><h1 id="logo-site" style="font-family:var(--font-titoli); margin:0;"></h1></header>
+    <header><h1 id="logo-site" style="font-family:var(--font-titoli); margin:0;">CARICAMENTO...</h1></header>
 
     <div id="scr-landing" class="screen active">
         <div id="macro-container"></div>
@@ -71,29 +72,44 @@
 </div>
 
 <script src="config.js"></script>
+
 <script>
-    // FIX CACHE: Rimuove vecchi Service Worker per far funzionare l'AR senza modalità incognito
+    // 1. KILL SERVICE WORKER & CACHE (Risolve il problema "Solo Incognito")
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(registrations => {
             for(let registration of registrations) { registration.unregister(); }
         });
     }
+    caches.keys().then(names => {
+        for (let name of names) caches.delete(name);
+    });
 
+    // Traduzioni
     const userLang = (navigator.language || 'it').substring(0, 2);
     const t = {
         it: { food: "CUCINA", drinks: "CANTINA", ar: "VEDI SUL TAVOLO 📦", alg: "Allergeni:", alc: "Analcolico" },
         en: { food: "KITCHEN", drinks: "CELLAR", ar: "VIEW ON TABLE 📦", alg: "Allergens:", alc: "Non-Alcoholic" }
     }[userLang] || { food: "KITCHEN", drinks: "CELLAR", ar: "VIEW ON TABLE 📦", alg: "Allergens:", alc: "Non-Alcoholic" };
 
+    // Navigazione
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         window.scrollTo(0,0);
     }
 
+    // Inizializzazione
     function init() {
+        // Controllo se i dati sono caricati
+        if (typeof MENU_DATA === 'undefined' || typeof APP_CONFIG === 'undefined') {
+            document.getElementById('logo-site').innerText = "ERRORE CONFIG.JS";
+            alert("Attenzione: Il file config.js non è stato trovato o contiene errori.");
+            return;
+        }
+
         document.getElementById('logo-site').innerText = APP_CONFIG.testoLogo;
         const container = document.getElementById('macro-container');
+        
         container.innerHTML = `
             <div class="btn-macro" onclick="renderCategories('food')">
                 <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800">
@@ -109,6 +125,8 @@
     function renderCategories(type) {
         const list = document.getElementById('categories-list');
         list.innerHTML = '';
+        if (!MENU_DATA[type]) return;
+
         MENU_DATA[type].forEach((cat, index) => {
             list.innerHTML += `<div class="btn-item" onclick="renderItems(MENU_DATA['${type}'][${index}].piatti, '${type}')">${cat.id.toUpperCase()}</div>`;
         });
@@ -130,8 +148,12 @@
 
         piatti.forEach(p => {
             if(filter === 'alc' && !p.analcolico) return;
-            list.innerHTML += `
-            <div class="item-card">
+            
+            // Creazione card
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            
+            let html = `
                 <div class="foto-piatto" style="background-image: url('${p.f}')">
                     ${p.m ? `
                     <model-viewer src="${p.m}" ar ar-modes="scene-viewer quick-look webxr" reveal="manual" ar-scale="fixed" environment-image="neutral" exposure="1.2">
@@ -144,14 +166,17 @@
                     <p class="desc">${p.d}</p>
                     <div class="allergens">${t.alg} ${p.a || 'Nessuno'}</div>
                 </div>
-            </div>`;
+            `;
+            card.innerHTML = html;
+            list.appendChild(card);
         });
         showScreen('scr-items');
     }
 
     window.applyDrinkFilter = (f) => renderItems(window.currentDrinkPiatti, 'drinks', f);
 
-    init();
+    // Lancio
+    window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
