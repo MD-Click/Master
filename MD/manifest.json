@@ -1,11 +1,11 @@
 {
-  "name": "Menu Demo",
-  "short_name": "Prototipo",
+  "name": "MD Servizi",
+  "short_name": "MD",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
-  "description": "Menu Digitale Interattivo",
+  "description": "Sito Interattivo",
   "icons": [
     {
       "src": "Image/icon-192.png",
