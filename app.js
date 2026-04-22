@@ -76,7 +76,6 @@ function getFilterLabels() {
         vegan: getVal('Filter_Name_Vegan', 'Vegano'),
         veg: getVal('Filter_Name_Veg', 'Vegetariano'),
         noalc: getVal('Filter_Name_NoAlc', 'Analcolico'),
-        bio: getVal('Filter_Name_Bio', 'Bio')
     };
 }
 
