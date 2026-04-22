@@ -418,7 +418,7 @@ function renderLevel3(m, c, isFiltering = false) {
         document.getElementById('sub-header-title').innerText = titleText;
         
         let filtersHtml = '';
-        const tags = ['noalc', 'gf', 'vegan', 'veg', 'bio'];
+        const tags = ['noalc', 'gf', 'vegan', 'veg'];
         
         tags.forEach(t => {
             if(allCategoryItems.some(i => isTruthy(i[t]))) {
@@ -429,7 +429,7 @@ function renderLevel3(m, c, isFiltering = false) {
         document.getElementById('sub-header-filters').innerHTML = filtersHtml;
     }
 
-    ['gf', 'vegan', 'veg', 'noalc', 'bio'].forEach(f => {
+    ['gf', 'vegan', 'veg', 'noalc'].forEach(f => {
         const btn = document.getElementById(`btn-${f}`);
         if(btn) { activeFilters.includes(f) ? btn.classList.add('active') : btn.classList.remove('active'); }
     });
@@ -445,8 +445,7 @@ function renderLevel3(m, c, isFiltering = false) {
         if(isTruthy(i.vegan)) badges += `<span class="badge badge-vegan">${escapeHTML(labels.vegan)}</span>`;
         if(isTruthy(i.veg)) badges += `<span class="badge badge-veg">${escapeHTML(labels.veg)}</span>`;
         if(isTruthy(i.noalc)) badges += `<span class="badge badge-noalc">${escapeHTML(labels.noalc)}</span>`;
-        if(isTruthy(i.bio)) badges += `<span class="badge badge-bio">${escapeHTML(labels.bio)}</span>`; 
-        
+               
         const hasDetails = i.details.trim() !== '';
         const cardClass = hasDetails ? 'menu-card clickable-card' : 'menu-card';
         const clickAction = hasDetails ? `onclick="openItemDetails(${i._id})"` : '';
@@ -510,8 +509,7 @@ function openItemDetails(id) {
     if(isTruthy(item.vegan)) badges += `<span class="badge badge-vegan">${escapeHTML(labels.vegan)}</span>`;
     if(isTruthy(item.veg)) badges += `<span class="badge badge-veg">${escapeHTML(labels.veg)}</span>`;
     if(isTruthy(item.noalc)) badges += `<span class="badge badge-noalc">${escapeHTML(labels.noalc)}</span>`;
-    if(isTruthy(item.bio)) badges += `<span class="badge badge-bio">${escapeHTML(labels.bio)}</span>`; 
-    const badgeHtml = badges ? `<div class="badge-container" style="justify-content:center; margin-bottom:15px;"><div class="badge-group">${badges}</div></div>` : '';
+  const badgeHtml = badges ? `<div class="badge-container" style="justify-content:center; margin-bottom:15px;"><div class="badge-group">${badges}</div></div>` : '';
 
   const arHtml = item.ar ? `
         <div style="width: 100%; display: flex; justify-content: center; margin-top: 20px;">
