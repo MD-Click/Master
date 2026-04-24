@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pwa-cafe-iberico-v1';
+const CACHE_NAME = 'pwa-md-servizi-v1';
 
 const STATIC_ASSETS = [
   'index.html',
