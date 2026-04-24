@@ -240,12 +240,13 @@ function applyConfig() {
     const sub = document.getElementById('subtitle-container');
     const subText = getVal('Subtitle_Text', '');
     root.style.setProperty('--subtitle-color', parseColor(getVal('Subtitle_Color', '#6b7280')));
+    root.style.setProperty('--subtitle-spacing', getVal('Subtitle_Spacing', 'normal'));
     root.style.setProperty('--subtitle-font', getVal('Subtitle_Font', 'sans-serif'));
     if (subText !== '') {
         sub.style.display = 'block'; sub.innerText = subText;
         sub.style.color = 'var(--subtitle-color)'; sub.style.fontSize = getVal('Subtitle_Size', '14px');
         sub.style.fontFamily = 'var(--subtitle-font)'; sub.style.fontWeight = isTruthy(getVal('Subtitle_Bold', 'FALSE')) ? 'bold' : 'normal';
-        sub.style.textAlign = getVal('Subtitle_Align', 'center').toLowerCase(); sub.style.marginTop = getVal('Subtitle_Margin_Top', '5px');
+        sub.style.textAlign = getVal('Subtitle_Align', 'center').toLowerCase(); sub.style.marginTop = getVal('Subtitle_Margin_Top', '5px'); sub.style.letterSpacing = 'var(--subtitle-spacing)';
     } else sub.style.display = 'none';
 
     root.style.setProperty('--filter-margin', getVal('SubHeader_Filter_Margin', '12px'));
